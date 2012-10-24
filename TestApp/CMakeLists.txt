@@ -1,0 +1,25 @@
+cmake_minimum_required(VERSION 2.8)
+project(QGLITTER_TESTAPP)
+
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+
+find_package(Qt4 REQUIRED COMPONENTS QtCore QtGui QtNetwork)
+
+include(${QT_USE_FILE})
+add_definitions(${QT_DEFINITIONS})
+
+set(SOURCES
+	App.cpp)
+
+set(HEADERS
+	App.h)
+
+QT4_ADD_RESOURCES(RCC_RESOURCES Resources.qrc)
+QT4_WRAP_CPP(HEADERS_MOC ${HEADERS})
+
+add_executable(TestApp ${SOURCES} ${RCC_RESOURCES} ${HEADERS_MOC})
+target_link_libraries(TestApp QGlitter ${QT_LIBRARIES} ${PLATFORM_LIBS})

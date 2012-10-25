@@ -27,8 +27,8 @@
 void printUsage()
 {
 	std::cerr << "Usage:" << std::endl;
-	std::cerr << "    qglitter-tool generate <keysize> <passphrase>" << std::endl << std::endl;
-	std::cerr << "    qglitter-tool sign <keyfile> <file> <passphrase>" << std::endl << std::endl;
+	std::cerr << "    qglitter-tool generate <keysize> [passphrase]" << std::endl;
+	std::cerr << "    qglitter-tool sign <keyfile> <file> [passphrase]" << std::endl;
 	std::cerr << "    qglitter-tool verify <keyfile> <file> <signature>" << std::endl << std::endl;
 }
 
@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
 {
 	qglitter_cryptoInit();
 
-	if (argc == 4 && QString(argv[1]) == "generate") {
+	if ((argc == 3 || argc == 4) && QString(argv[1]) == "generate") {
 		bool ok = false;
 		int keySize = QString(argv[2]).toInt(&ok);
 		if (!ok) {
@@ -49,7 +49,14 @@ int main(int argc, char *argv[])
 			return -1;
 		}
 
-		if (!qglitter_dsaKeygen(keySize, argv[3])) {
+		QString passphrase = "";
+		if (argc == 4) {
+			passphrase = argv[3];
+		} else {
+			std::cerr << "WARNING: Generating a key without a passphrase" << std::endl;
+		}
+
+		if (!qglitter_dsaKeygen(keySize, passphrase)) {
 			std::cerr << "Unable to generate keypair" << std::endl;
 			return -3;
 		}
@@ -57,45 +64,55 @@ int main(int argc, char *argv[])
 		return 0;
 	}
 
-	if (argc != 5) {
-		printUsage();
-		return -1;
-	}
-
-	QString action = argv[1];
-	if (action != "sign" && action != "verify") {
-		printUsage();
-		return -1;
-	}
-
-	QFile key(argv[2]);
-	if (!key.open(QIODevice::ReadOnly | QIODevice::Text)) {
-		std::cerr << "Unable to read keyfile: " << argv[2] << std::endl;
-		return -1;
-	}
-
-	QByteArray keyData = key.readAll();
-
-	key.close();
-
-	QFile data(argv[3]);
-	if (!data.open(QIODevice::ReadOnly)) {
-		std::cerr << "Unable to read data file " << argv[3] << std::endl;
-		return -1;
-	}
-
-	if (action == "sign") {
-		std::cout << qglitter_dsaSign(data, keyData, argv[4]).toBase64().data() << std::endl;
-	} else {
-		QByteArray signature = QByteArray::fromBase64(argv[4]);
-
-		if (qglitter_dsaVerify(data, signature, keyData)) {
-			return 0;
-		} else {
-			std::cerr << "Signature does not match" << std::endl;
-			return -2;
+	if (argc == 4 || argc == 5) {
+		QString action = argv[1];
+		if (action != "sign" && action != "verify") {
+			printUsage();
+			return -1;
 		}
+
+		QFile key(argv[2]);
+		if (!key.open(QIODevice::ReadOnly | QIODevice::Text)) {
+			std::cerr << "Unable to read keyfile: " << argv[2] << std::endl;
+			return -1;
+		}
+
+		QByteArray keyData = key.readAll();
+
+		key.close();
+
+		QFile data(argv[3]);
+		if (!data.open(QIODevice::ReadOnly)) {
+			std::cerr << "Unable to read data file " << argv[3] << std::endl;
+			return -1;
+		}
+
+		if (action == "sign") {
+			QString passphrase = "";
+			if (argc == 5) {
+				passphrase = argv[4];
+			}
+
+			std::cout << qglitter_dsaSign(data, keyData, passphrase).toBase64().data() << std::endl;
+		} else {
+			if (argc != 5) {
+				printUsage();
+				return -1;
+			}
+
+			QByteArray signature = QByteArray::fromBase64(argv[4]);
+
+			if (qglitter_dsaVerify(data, signature, keyData)) {
+				return 0;
+			} else {
+				std::cerr << "Signature does not match" << std::endl;
+				return -2;
+			}
+		}
+
+		return 0;
 	}
 
-	return 0;
+	printUsage();
+	return -1;
 }

@@ -21,6 +21,15 @@ if(WIN32)
 		Platform/Win32/Win32.cpp)
 endif()
 
+if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+    SET(LINUX ON CACHE BOOL "Linux system" FORCE)
+endif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+
+if(LINUX)
+	set(PLATFORM_SOURCES
+		Platform/Linux/Linux.cpp)
+endif()
+
 find_package(Qt4 REQUIRED COMPONENTS QtCore QtGui QtNetwork QtWebKit)
 
 include(${QT_USE_FILE})

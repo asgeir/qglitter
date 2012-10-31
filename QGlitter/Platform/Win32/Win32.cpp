@@ -33,24 +33,29 @@ bool qglitter_installUpdate(const QString &installerPath)
 	return system(command.toAscii().data()) == 0;
 }
 
-QString qglitter_osVersion()
+bool qglitter_osVersionLessThan(QString other)
 {
 	switch (QSysInfo::WindowsVersion) {
 	case QSysInfo::WV_XP:
-		return "Windows XP";
+		return other != "xp";
 
 	case QSysInfo::WV_VISTA:
-		return "Windows Vista";
+		return other == "7" || other == "8";
 
 	case QSysInfo::WV_WINDOWS7:
-		return "Windows 7";
+		return other == "8";
 
 	//case QSysInfo::WV_WINDOWS8:
-	//	return "Windows 8";
+	//	return "8";
 
 	default:
-		return "Unknown";
+		return false;
 	}
 
-	return "Unknown";
+	return false;
+}
+
+QString qglitter_os()
+{
+	return "windows";
 }

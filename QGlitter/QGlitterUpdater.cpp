@@ -224,7 +224,11 @@ void QGlitterUpdater::checkForUpdates(const QGlitterAppcast &appcast)
 			}
 		}
 
-		if (appcastItems[i].operatingSystem().length() > 0 && appcastItems[i].operatingSystem().compare(qglitter_osVersion(), Qt::CaseInsensitive) != 0) {
+		if (appcastItems[i].operatingSystem().length() > 0 && appcastItems[i].operatingSystem().compare(qglitter_os(), Qt::CaseInsensitive) != 0) {
+			continue;
+		}
+
+		if (appcastItems[i].minimumSystemVersion().length() > 0 && qglitter_osVersionLessThan(appcastItems[i].minimumSystemVersion().toLower())) {
 			continue;
 		}
 

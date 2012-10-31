@@ -26,4 +26,6 @@ class QIODevice;
 class QByteArray;
 
 bool qglitter_installUpdate(const QString &installerPath);
-QString qglitter_osVersion();
+
+QString qglitter_os();
+bool qglitter_osVersionLessThan(QString other);

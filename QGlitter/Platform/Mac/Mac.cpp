@@ -39,24 +39,29 @@ bool qglitter_installUpdate(const QString &installerPath)
 	return success;
 }
 
-QString qglitter_osVersion()
+bool qglitter_osVersionLessThan(QString other)
 {
 	switch (QSysInfo::MacintoshVersion) {
 	case QSysInfo::MV_10_5:
-		return "Mac OS X 10.5";
+		return "10.5" < other;
 
 	case QSysInfo::MV_10_6:
-		return "Mac OS X 10.6";
+		return "10.6" < other;
 
 	case QSysInfo::MV_10_7:
-		return "Mac OS X 10.7";
+		return "10.7" < other;
 
 	case QSysInfo::MV_10_8:
-		return "Mac OS X 10.8";
+		return "10.8" < other;
 
 	default:
-		return "Unknown";
+		return false;
 	}
 
-	return "Unknown";
+	return false;
+}
+
+QString qglitter_os()
+{
+	return "osx";
 }

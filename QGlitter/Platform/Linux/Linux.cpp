@@ -26,8 +26,13 @@ bool qglitter_installUpdate(const QString &installerPath)
 	return false;
 }
 
-QString qglitter_osVersion()
+bool qglitter_osVersionLessThan(QString other)
 {
 	// TODO
-	return "Linux";
+	return false;
+}
+
+QString qglitter_os()
+{
+	return "linux";
 }

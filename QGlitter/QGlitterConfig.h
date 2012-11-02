@@ -27,5 +27,5 @@
 #		define QGLITTER_EXPORTED __declspec(dllimport)
 #	endif
 #else
-#	define QGLITTER_EXPORTED
+#	define QGLITTER_EXPORTED __attribute__ ((visibility ("default")))
 #endif

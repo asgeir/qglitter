@@ -11,6 +11,10 @@ include_directories(${OPENSSL_INCLUDE_DIR})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${QGLITTER_BINARY_DIR})
 
+if(UNIX)
+	add_definitions(-fvisibility=hidden)
+endif()
+
 if(APPLE)
 	set(PLATFORM_SOURCES
 		Platform/Mac/Mac.cpp)

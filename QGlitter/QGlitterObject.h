@@ -39,8 +39,9 @@
 
 class QGlitterObject;
 
-struct QGlitterObjectData
+class QGlitterObjectData
 {
+public:
 	QGlitterObjectData() : qglitter_q_ptr(0) {}
 	virtual ~QGlitterObjectData() {}
 
@@ -50,9 +51,10 @@ struct QGlitterObjectData
 class QGlitterObject
 {
 public:
-	QGlitterObject(QGlitterObjectData *d_ptr) : qglitter_d_ptr(d_ptr) { if (qglitter_d_ptr) { qglitter_d_ptr->qglitter_q_ptr = this; } }
 	virtual ~QGlitterObject() { if (qglitter_d_ptr) { delete qglitter_d_ptr; qglitter_d_ptr = 0; } }
 
 protected:
+	QGlitterObject(QGlitterObjectData *d_ptr) : qglitter_d_ptr(d_ptr) { if (qglitter_d_ptr) { qglitter_d_ptr->qglitter_q_ptr = this; } }
+
 	QGlitterObjectData *qglitter_d_ptr;
 };

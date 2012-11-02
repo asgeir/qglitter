@@ -44,4 +44,5 @@ private:
 	void readItem();
 
 	QGLITTER_DECLARE_PRIVATE(QGlitterAppcast);
+	QGLITTER_DISABLE_COPY(QGlitterAppcast);
 };

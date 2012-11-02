@@ -33,6 +33,10 @@
 #define QGLITTER_D(Class) Class##Private * const d = qglitter_d_func()
 #define QGLITTER_Q(Class) Class * const q = qglitter_q_func()
 
+#define QGLITTER_DISABLE_COPY(Class) \
+	Class(const Class &); \
+	Class &operator=(const Class &);
+
 class QGlitterObject;
 
 struct QGlitterObjectData

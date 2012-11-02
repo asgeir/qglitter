@@ -86,4 +86,5 @@ private:
 	void downloadAndInstall(int mode, const QGlitterAppcastItem &update);
 
 	QGLITTER_DECLARE_PRIVATE(QGlitterUpdater);
+	QGLITTER_DISABLE_COPY(QGlitterUpdater);
 };

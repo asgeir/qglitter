@@ -26,9 +26,13 @@ class QByteArray;
 class QIODevice;
 class QString;
 
-QGLITTER_EXPORTED void qglitter_cryptoInit();
-QGLITTER_EXPORTED const QString &qglitter_ErrorMessage();
+namespace QGlitter {
 
-QGLITTER_EXPORTED bool qglitter_dsaKeygen(int size, const QString &passphrase);
-QGLITTER_EXPORTED bool qglitter_dsaVerify(QIODevice &sourceData, const QByteArray &signature, const QByteArray &publicKey);
-QGLITTER_EXPORTED QByteArray qglitter_dsaSign(QIODevice &sourceData, const QByteArray &privateKey, const QString &passphrase);
+QGLITTER_EXPORTED void cryptoInit();
+QGLITTER_EXPORTED const QString &errorMessage();
+
+QGLITTER_EXPORTED bool dsaKeygen(int size, const QString &passphrase);
+QGLITTER_EXPORTED bool dsaVerify(QIODevice &sourceData, const QByteArray &signature, const QByteArray &publicKey);
+QGLITTER_EXPORTED QByteArray dsaSign(QIODevice &sourceData, const QByteArray &privateKey, const QString &passphrase);
+
+}

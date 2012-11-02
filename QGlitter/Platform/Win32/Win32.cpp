@@ -25,7 +25,7 @@
 
 #include "Windows.h"
 
-bool qglitter_installUpdate(const QString &installerPath)
+bool QGlitter::installUpdate(const QString &installerPath)
 {
 	MoveFileEx(installerPath.toAscii().data(), NULL, MOVEFILE_DELAY_UNTIL_REBOOT);
 
@@ -33,7 +33,7 @@ bool qglitter_installUpdate(const QString &installerPath)
 	return system(command.toAscii().data()) == 0;
 }
 
-bool qglitter_osVersionLessThan(QString other)
+bool QGlitter::osVersionLessThan(QString other)
 {
 	switch (QSysInfo::WindowsVersion) {
 	case QSysInfo::WV_XP:
@@ -55,7 +55,7 @@ bool qglitter_osVersionLessThan(QString other)
 	return false;
 }
 
-QString qglitter_os()
+QString QGlitter::os()
 {
 	return "windows";
 }

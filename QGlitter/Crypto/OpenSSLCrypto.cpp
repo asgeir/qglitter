@@ -53,7 +53,7 @@ static QByteArray messageDigest(QIODevice &sourceData)
 	return QByteArray((const char *)md_value, md_len);
 }
 
-void qglitter_cryptoInit()
+void QGlitter::cryptoInit()
 {
 	OpenSSL_add_all_ciphers();
 	ERR_load_crypto_strings();
@@ -61,12 +61,12 @@ void qglitter_cryptoInit()
 
 static QString s_qglitterErrorMessage = "";
 
-const QString &qglitter_ErrorMessage()
+const QString &QGlitter::errorMessage()
 {
 	return s_qglitterErrorMessage;
 }
 
-bool qglitter_dsaKeygen(int size, const QString &passphrase)
+bool QGlitter::dsaKeygen(int size, const QString &passphrase)
 {
 	bool success = false;
 
@@ -111,7 +111,7 @@ bool qglitter_dsaKeygen(int size, const QString &passphrase)
 	return success;
 }
 
-bool qglitter_dsaVerify(QIODevice &sourceData, const QByteArray &signature, const QByteArray &publicKey)
+bool QGlitter::dsaVerify(QIODevice &sourceData, const QByteArray &signature, const QByteArray &publicKey)
 {
 	QByteArray rawSignature = QByteArray::fromBase64(signature);
 	BIO *publicKeyData = BIO_new_mem_buf((void *)publicKey.constData(), publicKey.size());
@@ -139,7 +139,7 @@ bool qglitter_dsaVerify(QIODevice &sourceData, const QByteArray &signature, cons
 	return verified;
 }
 
-QByteArray qglitter_dsaSign(QIODevice &sourceData, const QByteArray &privateKey, const QString &passphrase)
+QByteArray QGlitter::dsaSign(QIODevice &sourceData, const QByteArray &privateKey, const QString &passphrase)
 {
 	BIO *privateKeyData = BIO_new_mem_buf((void *)privateKey.constData(), privateKey.size());
 

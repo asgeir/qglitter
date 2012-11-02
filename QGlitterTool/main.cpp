@@ -34,7 +34,7 @@ void printUsage()
 
 int main(int argc, char *argv[])
 {
-	qglitter_cryptoInit();
+	QGlitter::cryptoInit();
 
 	if ((argc == 3 || argc == 4) && QString(argv[1]) == "generate") {
 		bool ok = false;
@@ -56,10 +56,10 @@ int main(int argc, char *argv[])
 			std::cerr << "WARNING: Generating a key without a passphrase" << std::endl;
 		}
 
-		if (!qglitter_dsaKeygen(keySize, passphrase)) {
+		if (!QGlitter::dsaKeygen(keySize, passphrase)) {
 			std::cerr << "Unable to generate keypair" << std::endl;
-			if (qglitter_ErrorMessage().size()) {
-				std::cerr << "ERROR: " << qglitter_ErrorMessage().toStdString() << std::endl;
+			if (QGlitter::errorMessage().size()) {
+				std::cerr << "ERROR: " << QGlitter::errorMessage().toStdString() << std::endl;
 			}
 			return -3;
 		}
@@ -96,9 +96,9 @@ int main(int argc, char *argv[])
 				passphrase = argv[4];
 			}
 
-			std::cout << qglitter_dsaSign(data, keyData, passphrase).toBase64().data() << std::endl;
-			if (qglitter_ErrorMessage().size()) {
-				std::cerr << "ERROR: " << qglitter_ErrorMessage().toStdString() << std::endl;
+			std::cout << QGlitter::dsaSign(data, keyData, passphrase).toBase64().data() << std::endl;
+			if (QGlitter::errorMessage().size()) {
+				std::cerr << "ERROR: " << QGlitter::errorMessage().toStdString() << std::endl;
 			}
 		} else {
 			if (argc != 5) {
@@ -108,12 +108,12 @@ int main(int argc, char *argv[])
 
 			QByteArray signature = QByteArray::fromBase64(argv[4]);
 
-			if (qglitter_dsaVerify(data, signature, keyData)) {
+			if (QGlitter::dsaVerify(data, signature, keyData)) {
 				return 0;
 			} else {
 				std::cerr << "Signature does not match" << std::endl;
-				if (qglitter_ErrorMessage().size()) {
-					std::cerr << "ERROR: " << qglitter_ErrorMessage().toStdString() << std::endl;
+				if (QGlitter::errorMessage().size()) {
+					std::cerr << "ERROR: " << QGlitter::errorMessage().toStdString() << std::endl;
 				}
 				return -2;
 			}

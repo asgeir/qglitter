@@ -84,7 +84,7 @@ QGlitterUpdater::QGlitterUpdater(bool allowVersionSkipping, bool allowDelayInsta
 	d->allowVersionSkipping = allowVersionSkipping;
 	d->allowDelayInstallUntilQuit = allowDelayInstalUntilQuit;
 
-	qglitter_cryptoInit();
+	QGlitter::cryptoInit();
 
 	d->defaultLanguage = QLocale::system().name();
 	d->defaultLanguage.truncate(d->defaultLanguage.lastIndexOf('_'));
@@ -247,11 +247,11 @@ void QGlitterUpdater::checkForUpdates(const QGlitterAppcast &appcast)
 			}
 		}
 
-		if (appcastItems[i].operatingSystem().length() > 0 && appcastItems[i].operatingSystem().compare(qglitter_os(), Qt::CaseInsensitive) != 0) {
+		if (appcastItems[i].operatingSystem().length() > 0 && appcastItems[i].operatingSystem().compare(QGlitter::os(), Qt::CaseInsensitive) != 0) {
 			continue;
 		}
 
-		if (appcastItems[i].minimumSystemVersion().length() > 0 && qglitter_osVersionLessThan(appcastItems[i].minimumSystemVersion().toLower())) {
+		if (appcastItems[i].minimumSystemVersion().length() > 0 && QGlitter::osVersionLessThan(appcastItems[i].minimumSystemVersion().toLower())) {
 			continue;
 		}
 
@@ -304,7 +304,7 @@ void QGlitterUpdater::aboutToQuit()
 
 	if (d->pendingUpdate.length() > 0) {
 		emit installingUpdate();
-		if (qglitter_installUpdate(d->pendingUpdate)) {
+		if (QGlitter::installUpdate(d->pendingUpdate)) {
 			emit finishedInstallingUpdate();
 		}
 	}
@@ -340,7 +340,7 @@ void QGlitterUpdater::automaticUpdateDownloaded(int errorCode, QString installer
 			d->pendingUpdate = installerPath;
 		} else {
 			emit installingUpdate();
-			if (qglitter_installUpdate(installerPath)) {
+			if (QGlitter::installUpdate(installerPath)) {
 				emit finishedInstallingUpdate();
 			}
 		}
@@ -371,7 +371,7 @@ void QGlitterUpdater::downloadAndInstall(int mode, const QGlitterAppcastItem &up
 			emit updateCanceled();
 		} else if (d->downloader->errorCode() == QGlitterDownloader::NoError) {
 			emit installingUpdate();
-			if (qglitter_installUpdate(d->downloader->installerFile())) {
+			if (QGlitter::installUpdate(d->downloader->installerFile())) {
 				emit finishedInstallingUpdate();
 			}
 		}

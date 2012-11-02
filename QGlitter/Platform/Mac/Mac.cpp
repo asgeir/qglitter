@@ -31,7 +31,7 @@
 
 #include <QDebug>
 
-bool qglitter_installUpdate(const QString &installerPath)
+bool QGlitter::installUpdate(const QString &installerPath)
 {
 	QString command = QString("hdiutil attach '%1' -autoopen; rm '%1'").arg(installerPath);
 	bool success = system(command.toAscii().data()) == 0;
@@ -39,7 +39,7 @@ bool qglitter_installUpdate(const QString &installerPath)
 	return success;
 }
 
-bool qglitter_osVersionLessThan(QString other)
+bool QGlitter::osVersionLessThan(QString other)
 {
 	switch (QSysInfo::MacintoshVersion) {
 	case QSysInfo::MV_10_5:
@@ -61,7 +61,7 @@ bool qglitter_osVersionLessThan(QString other)
 	return false;
 }
 
-QString qglitter_os()
+QString QGlitter::os()
 {
 	return "osx";
 }

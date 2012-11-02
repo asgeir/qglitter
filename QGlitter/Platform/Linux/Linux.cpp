@@ -20,19 +20,19 @@
 
 #include "Platform/Platform.h"
 
-bool qglitter_installUpdate(const QString &installerPath)
+bool QGlitter::installUpdate(const QString &installerPath)
 {
 	// TODO
 	return false;
 }
 
-bool qglitter_osVersionLessThan(QString other)
+bool QGlitter::osVersionLessThan(QString other)
 {
 	// TODO
 	return false;
 }
 
-QString qglitter_os()
+QString QGlitter::os()
 {
 	return "linux";
 }

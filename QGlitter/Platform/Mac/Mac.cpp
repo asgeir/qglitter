@@ -27,7 +27,7 @@
 #include <CoreFoundation/CoreFoundation.h>
 #include <Security/Security.h>
 
-#include <stdlib.h>
+#include <cstdlib>
 
 #include <QDebug>
 

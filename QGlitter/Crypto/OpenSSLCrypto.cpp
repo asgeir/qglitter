@@ -30,7 +30,6 @@
 #include <openssl/pem.h>
 
 #include <cstdio>
-#include <iostream>
 
 #ifdef WIN32
 #include <openssl/applink.c>
@@ -58,6 +57,13 @@ void qglitter_cryptoInit()
 {
 	OpenSSL_add_all_ciphers();
 	ERR_load_crypto_strings();
+}
+
+static QString s_qglitterErrorMessage = "";
+
+const QString &qglitter_ErrorMessage()
+{
+	return s_qglitterErrorMessage;
 }
 
 bool qglitter_dsaKeygen(int size, const QString &passphrase)
@@ -94,12 +100,12 @@ bool qglitter_dsaKeygen(int size, const QString &passphrase)
 				fclose(privateKeyFile);
 			}
 		} else {
-			std::cerr << ERR_error_string(ERR_get_error(), 0) << std::endl;
+			s_qglitterErrorMessage = ERR_error_string(ERR_get_error(), 0);
 		}
 
 		DSA_free(dsa);
 	} else {
-		std::cerr << ERR_error_string(ERR_get_error(), 0) << std::endl;
+		s_qglitterErrorMessage = ERR_error_string(ERR_get_error(), 0);
 	}
 
 	return success;
@@ -120,12 +126,12 @@ bool qglitter_dsaVerify(QIODevice &sourceData, const QByteArray &signature, cons
 		if (status > 0) {
 			verified = true;
 		} else if (status < 0) {
-			std::cerr << ERR_error_string(ERR_get_error(), 0) << std::endl;
+			s_qglitterErrorMessage = ERR_error_string(ERR_get_error(), 0);
 		}
 
 		DSA_free(dsa);
 	} else {
-		std::cerr << ERR_error_string(ERR_get_error(), 0) << std::endl;
+		s_qglitterErrorMessage = ERR_error_string(ERR_get_error(), 0);
 	}
 
 	BIO_free(publicKeyData);
@@ -150,12 +156,12 @@ QByteArray qglitter_dsaSign(QIODevice &sourceData, const QByteArray &privateKey,
 			dsaSignature.truncate(signatureLength);
 			signature = dsaSignature.toBase64();
 		} else {
-			std::cerr << ERR_error_string(ERR_get_error(), 0) << std::endl;
+			s_qglitterErrorMessage = ERR_error_string(ERR_get_error(), 0);
 		}
 
 		DSA_free(dsa);
 	} else {
-		std::cerr << ERR_error_string(ERR_get_error(), 0) << std::endl;
+		s_qglitterErrorMessage = ERR_error_string(ERR_get_error(), 0);
 	}
 
 	BIO_free(privateKeyData);

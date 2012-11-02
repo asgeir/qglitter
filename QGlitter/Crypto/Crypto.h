@@ -25,6 +25,7 @@ class QIODevice;
 class QString;
 
 void qglitter_cryptoInit();
+const QString &qglitter_ErrorMessage();
 
 bool qglitter_dsaKeygen(int size, const QString &passphrase);
 bool qglitter_dsaVerify(QIODevice &sourceData, const QByteArray &signature, const QByteArray &publicKey);

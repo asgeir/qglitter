@@ -21,6 +21,7 @@
 #include "QGlitterDownloader.h"
 #include "Crypto/Crypto.h"
 
+#include <QDebug>
 #include <QDir>
 #include <QFile>
 #include <QNetworkAccessManager>
@@ -135,6 +136,10 @@ void QGlitterDownloader::finished()
 
 			emit downloadFinished(QGlitterDownloader::NoError, m_downloadedFileName);
 		} else {
+			if (qglitter_ErrorMessage().size()) {
+				qDebug() << qglitter_ErrorMessage();
+			}
+
 			emit downloadFinished(QGlitterDownloader::SignatureVerificationFailure, "");
 		}
 	} else {

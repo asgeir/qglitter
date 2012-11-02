@@ -14,6 +14,8 @@ include_directories(${QGLITTER_BINARY_DIR})
 if(APPLE)
 	set(PLATFORM_SOURCES
 		Platform/Mac/Mac.cpp)
+
+	set(CMAKE_SHARED_LIBRARY_PREFIX "")
 endif()
 
 if(WIN32)
@@ -63,5 +65,5 @@ set(UI_FILES
 QT4_WRAP_CPP(MOC_SOURCES ${HEADERS})
 QT4_WRAP_UI(UI_SOURCES ${UI_FILES})
 
-add_library(QGlitter STATIC ${SOURCES} ${MOC_SOURCES} ${UI_SOURCES})
-target_link_libraries(QGlitter ${QT_LIBRARIES} ${OPENSSL_LIBRARIES} ${PLATFORM_LIBS})
+add_library(qglitter SHARED ${SOURCES} ${MOC_SOURCES} ${UI_SOURCES})
+target_link_libraries(qglitter ${QT_LIBRARIES} ${OPENSSL_LIBRARIES} ${PLATFORM_LIBS})

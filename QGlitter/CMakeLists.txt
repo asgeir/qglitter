@@ -1,6 +1,12 @@
 cmake_minimum_required(VERSION 2.8)
 project(QGLITTER)
 
+set(QGLITTER_VERSION "0.1.0")
+
+if(NOT QGLITTER_BUILD_SHARED AND NOT QGLITTER_BUILD_STATIC)
+	set(QGLITTER_BUILD_SHARED ON)
+endif()
+
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
@@ -63,6 +69,14 @@ set(HEADERS
 	QGlitterUpdater.h
 	QGlitterUpdateStatus.h)
 
+set(PUBLIC_HEADERS
+	QGlitter
+	QGlitterAppcast.h
+	QGlitterAppcastItem.h
+	QGlitterConfig.h
+	QGlitterObject.h
+	QGlitterUpdater.h)
+
 set(UI_FILES
 	Designer/QGlitterAutomaticUpdateAlert.ui
 	Designer/QGlitterUpdateAlert.ui
@@ -71,5 +85,20 @@ set(UI_FILES
 QT4_WRAP_CPP(MOC_SOURCES ${HEADERS})
 QT4_WRAP_UI(UI_SOURCES ${UI_FILES})
 
-add_library(qglitter SHARED ${SOURCES} ${MOC_SOURCES} ${UI_SOURCES})
-target_link_libraries(qglitter ${QT_LIBRARIES} ${OPENSSL_LIBRARIES} ${PLATFORM_LIBS})
+install(FILES ${PUBLIC_HEADERS} DESTINATION include/QGlitter)
+
+if(QGLITTER_BUILD_SHARED)
+	add_library(qglitter SHARED ${SOURCES} ${MOC_SOURCES} ${UI_SOURCES})
+	target_link_libraries(qglitter ${QT_LIBRARIES} ${OPENSSL_LIBRARIES} ${PLATFORM_LIBS})
+	set_target_properties(qglitter PROPERTIES VERSION ${QGLITTER_VERSION} SOVERSION ${QGLITTER_VERSION} INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
+
+	install(TARGETS qglitter LIBRARY DESTINATION lib)
+endif()
+
+if(QGLITTER_BUILD_STATIC)
+	add_library(qglitter_static STATIC ${SOURCES} ${MOC_SOURCES} ${UI_SOURCES})
+	target_link_libraries(qglitter_static ${QT_LIBRARIES} ${OPENSSL_LIBRARIES} ${PLATFORM_LIBS})
+	set_target_properties(qglitter_static PROPERTIES OUTPUT_NAME "qglitter")
+
+	install(TARGETS qglitter_static ARCHIVE DESTINATION lib)
+endif()

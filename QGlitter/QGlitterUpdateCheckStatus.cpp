@@ -20,10 +20,9 @@
 
 #include "QGlitterUpdateCheckStatus.h"
 #include "ui_QGlitterUpdateStatus.h"
+#include "QGlitterCommon.h"
 
 #include <QNetworkReply>
-
-const char * const kBoldText = "<html><body><p><span style=\" font-weight:600;\">%1</span></p></body></html>";
 
 QGlitterUpdateCheckStatus::QGlitterUpdateCheckStatus(QWidget *parent, Qt::WindowFlags f)
 	: QDialog(parent, f | Qt::Dialog | Qt::CustomizeWindowHint | Qt::WindowCloseButtonHint)
@@ -36,7 +35,7 @@ QGlitterUpdateCheckStatus::QGlitterUpdateCheckStatus(QWidget *parent, Qt::Window
 
 	m_ui->setupUi(this);
 
-	m_ui->statusText->setText(QString(kBoldText).arg(QObject::tr("Checking for Updates")));
+	m_ui->statusText->setText(QString(kQGlitterBoldText).arg(QObject::tr("Checking for Updates")));
 	m_ui->pushButton->setText(QObject::tr("Cancel"));
 
 	connect(m_ui->pushButton, SIGNAL(clicked(bool)), this, SLOT(reject()));
@@ -90,7 +89,7 @@ void QGlitterUpdateCheckStatus::noUpdatesAvailable()
 		return;
 	}
 
-	m_ui->statusText->setText(QString(kBoldText).arg(QObject::tr("No Updates Found")));
+	m_ui->statusText->setText(QString(kQGlitterBoldText).arg(QObject::tr("No Updates Found")));
 	m_ui->pushButton->setText(QObject::tr("OK"));
 
 	m_ui->progressBar->setMinimum(0);

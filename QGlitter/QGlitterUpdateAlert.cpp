@@ -20,10 +20,9 @@
 
 #include "QGlitterUpdateAlert.h"
 #include "ui_QGlitterUpdateAlert.h"
+#include "QGlitterCommon.h"
 
 #include <QPixmap>
-
-const char * const kBoldText = "<html><body><p><span style=\" font-weight:600;\">%1</span></p></body></html>";
 
 QGlitterUpdateAlert::QGlitterUpdateAlert(QWidget *parent, Qt::WindowFlags f)
 	: QDialog(parent, f | Qt::Dialog | Qt::CustomizeWindowHint | Qt::WindowCloseButtonHint)
@@ -43,7 +42,7 @@ QGlitterUpdateAlert::QGlitterUpdateAlert(QWidget *parent, Qt::WindowFlags f)
 	connect(m_ui->remindMeLaterButton, SIGNAL(clicked(bool)), this, SLOT(reject()));
 	connect(m_ui->skipVersionButton, SIGNAL(clicked(bool)), this, SLOT(toggleSkipVersion()));
 
-	m_ui->headerLabel->setText(QString(kBoldText).arg(QObject::tr("A new version of %1 is available!").arg(qApp->applicationName())));
+	m_ui->headerLabel->setText(QString(kQGlitterBoldText).arg(QObject::tr("A new version of %1 is available!").arg(qApp->applicationName())));
 }
 
 QGlitterUpdateAlert::~QGlitterUpdateAlert()

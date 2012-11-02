@@ -20,11 +20,10 @@
 
 #include "QGlitterUpdateStatus.h"
 #include "ui_QGlitterUpdateStatus.h"
+#include "QGlitterCommon.h"
 #include "QGlitterDownloader.h"
 
 #include <QPixmap>
-
-const char * const kBoldText = "<html><body><p><span style=\" font-weight:600;\">%1</span></p></body></html>";
 
 const int kStateDownloading = 0;
 const int kStateFinished = 1;
@@ -40,7 +39,7 @@ QGlitterUpdateStatus::QGlitterUpdateStatus(QWidget *parent, Qt::WindowFlags f)
 
 	m_ui->setupUi(this);
 
-	m_ui->statusText->setText(QString(kBoldText).arg(QObject::tr("Downloading Update")));
+	m_ui->statusText->setText(QString(kQGlitterBoldText).arg(QObject::tr("Downloading Update")));
 	m_ui->pushButton->setText(QObject::tr("Cancel"));
 
 	connect(m_ui->pushButton, SIGNAL(clicked(bool)), this, SLOT(buttonPressed()));
@@ -78,7 +77,7 @@ void QGlitterUpdateStatus::downloadFinished(int errorCode, QString)
 
 		m_ui->progressText->setVisible(false);
 
-		m_ui->statusText->setText(QString(kBoldText).arg(QObject::tr("Update Downloaded")));
+		m_ui->statusText->setText(QString(kQGlitterBoldText).arg(QObject::tr("Update Downloaded")));
 
 		m_ui->pushButton->setText(QObject::tr("Install and Restart"));
 
@@ -90,11 +89,11 @@ void QGlitterUpdateStatus::downloadFinished(int errorCode, QString)
 		m_ui->progressText->setVisible(false);
 
 		if (errorCode == QGlitterDownloader::DownloadedFileCouldNotBeRead) {
-			m_ui->statusText->setText(QString(kBoldText).arg(QObject::tr("Could Not Read Downloaded Update")));
+			m_ui->statusText->setText(QString(kQGlitterBoldText).arg(QObject::tr("Could Not Read Downloaded Update")));
 		} else if (errorCode == QGlitterDownloader::SignatureVerificationFailure) {
-			m_ui->statusText->setText(QString(kBoldText).arg(QObject::tr("Could Not Verify Update Signature")));
+			m_ui->statusText->setText(QString(kQGlitterBoldText).arg(QObject::tr("Could Not Verify Update Signature")));
 		} else {
-			m_ui->statusText->setText(QString(kBoldText).arg(QObject::tr("Error Downloading Update")));
+			m_ui->statusText->setText(QString(kQGlitterBoldText).arg(QObject::tr("Error Downloading Update")));
 		}
 
 		m_ui->pushButton->setText(QObject::tr("OK"));
@@ -112,7 +111,7 @@ void QGlitterUpdateStatus::downloadProgress(qint64 bytesReceived, qint64 bytesTo
 
 	float downloadedMB = bytesReceived / (1024 * 1024);
 	float totalMB = bytesTotal / (1024 * 1024);
-	m_ui->progressText->setText(QString(kBoldText).arg(QObject::tr("Downloaded %1 MB of %2 MB").arg(downloadedMB).arg(totalMB)));
+	m_ui->progressText->setText(QObject::tr("Downloaded %1 MB of %2 MB").arg(downloadedMB).arg(totalMB));
 }
 
 void QGlitterUpdateStatus::buttonPressed()

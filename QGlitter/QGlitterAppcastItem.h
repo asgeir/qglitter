@@ -21,13 +21,14 @@
 #pragma once
 
 #include "QGlitterObject.h"
+#include "QGlitterConfig.h"
 
 #include <QDateTime>
 #include <QMap>
 #include <QString>
 
 class QGlitterAppcastItemPrivate;
-class QGlitterAppcastItem : public QGlitterObject
+class QGLITTER_EXPORTED QGlitterAppcastItem : public QGlitterObject
 {
 public:
 	QGlitterAppcastItem();

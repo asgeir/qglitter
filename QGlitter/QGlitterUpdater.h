@@ -21,6 +21,7 @@
 #pragma once
 
 #include "QGlitterObject.h"
+#include "QGlitterConfig.h"
 
 #include <QObject>
 
@@ -30,7 +31,7 @@ class QNetworkReply;
 class QPixmap;
 
 class QGlitterUpdaterPrivate;
-class QGlitterUpdater : public QObject, public QGlitterObject
+class QGLITTER_EXPORTED QGlitterUpdater : public QObject, public QGlitterObject
 {
 	Q_OBJECT
 public:

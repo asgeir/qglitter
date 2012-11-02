@@ -22,13 +22,14 @@
 
 #include "QGlitterAppcastItem.h"
 #include "QGlitterObject.h"
+#include "QGlitterConfig.h"
 
 #include <QList>
 
 class QIODevice;
 
 class QGlitterAppcastPrivate;
-class QGlitterAppcast : public QGlitterObject
+class QGLITTER_EXPORTED QGlitterAppcast : public QGlitterObject
 {
 public:
 	QGlitterAppcast();

@@ -21,6 +21,8 @@ endif()
 if(WIN32)
 	set(PLATFORM_SOURCES
 		Platform/Win32/Win32.cpp)
+
+	add_definitions(-DQGLITTER_EXPORT_SYMBOLS)
 endif()
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")

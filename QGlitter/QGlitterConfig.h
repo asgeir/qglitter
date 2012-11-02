@@ -20,15 +20,12 @@
 
 #pragma once
 
-#include "QGlitter/QGlitterConfig.h"
-
-class QByteArray;
-class QIODevice;
-class QString;
-
-QGLITTER_EXPORTED void qglitter_cryptoInit();
-QGLITTER_EXPORTED const QString &qglitter_ErrorMessage();
-
-QGLITTER_EXPORTED bool qglitter_dsaKeygen(int size, const QString &passphrase);
-QGLITTER_EXPORTED bool qglitter_dsaVerify(QIODevice &sourceData, const QByteArray &signature, const QByteArray &publicKey);
-QGLITTER_EXPORTED QByteArray qglitter_dsaSign(QIODevice &sourceData, const QByteArray &privateKey, const QString &passphrase);
+#ifdef WIN32
+#	ifdef QGLITTER_EXPORT_SYMBOLS
+#		define QGLITTER_EXPORTED __declspec(dllexport)
+#	else
+#		define QGLITTER_EXPORTED __declspec(dllimport)
+#	endif
+#else
+#	define QGLITTER_EXPORTED
+#endif

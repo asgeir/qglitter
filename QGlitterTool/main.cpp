@@ -58,6 +58,9 @@ int main(int argc, char *argv[])
 
 		if (!qglitter_dsaKeygen(keySize, passphrase)) {
 			std::cerr << "Unable to generate keypair" << std::endl;
+			if (qglitter_ErrorMessage().size()) {
+				std::cerr << "ERROR: " << qglitter_ErrorMessage().toStdString() << std::endl;
+			}
 			return -3;
 		}
 
@@ -94,6 +97,9 @@ int main(int argc, char *argv[])
 			}
 
 			std::cout << qglitter_dsaSign(data, keyData, passphrase).toBase64().data() << std::endl;
+			if (qglitter_ErrorMessage().size()) {
+				std::cerr << "ERROR: " << qglitter_ErrorMessage().toStdString() << std::endl;
+			}
 		} else {
 			if (argc != 5) {
 				printUsage();
@@ -106,6 +112,9 @@ int main(int argc, char *argv[])
 				return 0;
 			} else {
 				std::cerr << "Signature does not match" << std::endl;
+				if (qglitter_ErrorMessage().size()) {
+					std::cerr << "ERROR: " << qglitter_ErrorMessage().toStdString() << std::endl;
+				}
 				return -2;
 			}
 		}

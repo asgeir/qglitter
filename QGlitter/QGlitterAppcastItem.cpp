@@ -19,154 +19,225 @@
 // SOFTWARE.
 
 #include "QGlitterAppcastItem.h"
+#include "QGlitterAppcastItem_p.h"
+
+QGlitterAppcastItemPrivate::QGlitterAppcastItemPrivate()
+	: deltaFrom("")
+	, descriptions()
+	, mimeType("")
+	, minimumSystemVersion("")
+	, operatingSystem("")
+	, publicationDate()
+	, releaseNotesUrls()
+	, shortVersionString("")
+	, signature("")
+	, size(0)
+	, title("")
+	, url("")
+	, version("")
+{
+}
+
+QGlitterAppcastItemPrivate::QGlitterAppcastItemPrivate(const QGlitterAppcastItemPrivate &other)
+{
+	clone(other);
+}
+
+void QGlitterAppcastItemPrivate::clone(const QGlitterAppcastItemPrivate &other)
+{
+	deltaFrom = other.deltaFrom;
+	descriptions = other.descriptions;
+	mimeType = other.mimeType;
+	minimumSystemVersion = other.minimumSystemVersion;
+	operatingSystem = other.operatingSystem;
+	publicationDate = other.publicationDate;
+	releaseNotesUrls = other.releaseNotesUrls;
+	shortVersionString = other.shortVersionString;
+	signature = other.signature;
+	size = other.size;
+	title = other.title;
+	url = other.url;
+	version = other.version;
+}
 
 QGlitterAppcastItem::QGlitterAppcastItem()
-	: m_deltaFrom("")
-	, m_descriptions()
-	, m_mimeType("")
-	, m_minimumSystemVersion("")
-	, m_operatingSystem("")
-	, m_publicationDate()
-	, m_releaseNotesUrls()
-	, m_shortVersionString("")
-	, m_signature("")
-	, m_size(0)
-	, m_title("")
-	, m_url("")
-	, m_version("")
+	: QGlitterObject(new QGlitterAppcastItemPrivate)
 {
+}
+
+QGlitterAppcastItem::QGlitterAppcastItem(const QGlitterAppcastItem &other)
+	: QGlitterObject(new QGlitterAppcastItemPrivate(*other.qglitter_d_func()))
+{
+}
+
+QGlitterAppcastItem &QGlitterAppcastItem::operator=(const QGlitterAppcastItem &rhs)
+{
+	if (&rhs == this) {
+		return *this;
+	}
+
+	*qglitter_d_func() = *rhs.qglitter_d_func();
+
+	return *this;
 }
 
 QString QGlitterAppcastItem::deltaFrom() const
 {
-	return m_deltaFrom;
+	const QGLITTER_D(QGlitterAppcastItem);
+	return d->deltaFrom;
 }
 
 void QGlitterAppcastItem::setDeltaFrom(QString deltaFrom)
 {
-	m_deltaFrom = deltaFrom;
+	QGLITTER_D(QGlitterAppcastItem);
+	d->deltaFrom = deltaFrom;
 }
 
 QMap<QString, QString> QGlitterAppcastItem::descriptions() const
 {
-	return m_descriptions;
+	const QGLITTER_D(QGlitterAppcastItem);
+	return d->descriptions;
 }
 
 void QGlitterAppcastItem::addDescription(QString language, QString description)
 {
-	m_descriptions[language] = description;
+	QGLITTER_D(QGlitterAppcastItem);
+	d->descriptions[language] = description;
 }
 
 QString QGlitterAppcastItem::mimeType() const
 {
-	return m_mimeType;
+	const QGLITTER_D(QGlitterAppcastItem);
+	return d->mimeType;
 }
 
 void QGlitterAppcastItem::setMimeType(QString mimeType)
 {
-	m_mimeType = mimeType;
+	QGLITTER_D(QGlitterAppcastItem);
+	d->mimeType = mimeType;
 }
 
 QString QGlitterAppcastItem::minimumSystemVersion() const
 {
-	return m_minimumSystemVersion;
+	const QGLITTER_D(QGlitterAppcastItem);
+	return d->minimumSystemVersion;
 }
 
 void QGlitterAppcastItem::setMinimumSystemVersion(QString minimumSystemVersion)
 {
-	m_minimumSystemVersion = minimumSystemVersion;
+	QGLITTER_D(QGlitterAppcastItem);
+	d->minimumSystemVersion = minimumSystemVersion;
 }
 
 QString QGlitterAppcastItem::operatingSystem() const
 {
-	return m_operatingSystem;
+	const QGLITTER_D(QGlitterAppcastItem);
+	return d->operatingSystem;
 }
 
 void QGlitterAppcastItem::setOperatingSystem(QString operatingSystem)
 {
-	m_operatingSystem = operatingSystem;
+	QGLITTER_D(QGlitterAppcastItem);
+	d->operatingSystem = operatingSystem;
 }
 
 QDateTime QGlitterAppcastItem::publicationDate() const
 {
-	return m_publicationDate;
+	const QGLITTER_D(QGlitterAppcastItem);
+	return d->publicationDate;
 }
 
 void QGlitterAppcastItem::setPublicationDate(QDateTime publicationDate)
 {
-	m_publicationDate = publicationDate;
+	QGLITTER_D(QGlitterAppcastItem);
+	d->publicationDate = publicationDate;
 }
 
 QMap<QString, QString> QGlitterAppcastItem::releaseNotesUrls() const
 {
-	return m_releaseNotesUrls;
+	const QGLITTER_D(QGlitterAppcastItem);
+	return d->releaseNotesUrls;
 }
 
 void QGlitterAppcastItem::addReleaseNotesUrl(QString language, QString releaseNotesUrl)
 {
-	m_releaseNotesUrls[language] = releaseNotesUrl;
+	QGLITTER_D(QGlitterAppcastItem);
+	d->releaseNotesUrls[language] = releaseNotesUrl;
 }
 
 QString QGlitterAppcastItem::shortVersionString() const
 {
-	if (m_shortVersionString.size() == 0) {
-		return m_version;
+	const QGLITTER_D(QGlitterAppcastItem);
+
+	if (d->shortVersionString.size() == 0) {
+		return d->version;
 	}
 
-	return m_shortVersionString;
+	return d->shortVersionString;
 }
 
 void QGlitterAppcastItem::setShortVersionString(QString shortVersionString)
 {
-	m_shortVersionString = shortVersionString;
+	QGLITTER_D(QGlitterAppcastItem);
+	d->shortVersionString = shortVersionString;
 }
 
 QString QGlitterAppcastItem::signature() const
 {
-	return m_signature;
+	const QGLITTER_D(QGlitterAppcastItem);
+	return d->signature;
 }
 
 void QGlitterAppcastItem::setSignature(QString signature)
 {
-	m_signature = signature;
+	QGLITTER_D(QGlitterAppcastItem);
+	d->signature = signature;
 }
 
 int QGlitterAppcastItem::size() const
 {
-	return m_size;
+	const QGLITTER_D(QGlitterAppcastItem);
+	return d->size;
 }
 
 void QGlitterAppcastItem::setSize(int size)
 {
-	m_size = size;
+	QGLITTER_D(QGlitterAppcastItem);
+	d->size = size;
 }
 
 QString QGlitterAppcastItem::title() const
 {
-	return m_title;
+	const QGLITTER_D(QGlitterAppcastItem);
+	return d->title;
 }
 
 void QGlitterAppcastItem::setTitle(QString title)
 {
-	m_title = title;
+	QGLITTER_D(QGlitterAppcastItem);
+	d->title = title;
 }
 
 QString QGlitterAppcastItem::url() const
 {
-	return m_url;
+	const QGLITTER_D(QGlitterAppcastItem);
+	return d->url;
 }
 
 void QGlitterAppcastItem::setUrl(QString url)
 {
-	m_url = url;
+	QGLITTER_D(QGlitterAppcastItem);
+	d->url = url;
 }
 
 QString QGlitterAppcastItem::version() const
 {
-	return m_version;
+	const QGLITTER_D(QGlitterAppcastItem);
+	return d->version;
 }
 
 void QGlitterAppcastItem::setVersion(QString version)
 {
-	m_version = version;
+	QGLITTER_D(QGlitterAppcastItem);
+	d->version = version;
 }

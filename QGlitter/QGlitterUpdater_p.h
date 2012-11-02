@@ -20,6 +20,42 @@
 
 #pragma once
 
-#include "QGlitterAppcast.h"
-#include "QGlitterAppcastItem.h"
 #include "QGlitterUpdater.h"
+#include "QGlitterObject.h"
+
+#include <QStringList>
+
+class QNetworkAccessManager;
+class QPixmap;
+class QSettings;
+class QGlitterDownloader;
+class QTimer;
+
+class QGlitterUpdaterPrivate : public QGlitterObjectData
+{
+	QGLITTER_DECLARE_PUBLIC(QGlitterUpdater);
+public:
+	QGlitterUpdaterPrivate();
+
+	QScopedPointer<QPixmap> applicationIcon;
+	QString internalVersion;
+	QByteArray publicKey;
+
+	bool automaticCheck;
+	bool automaticDownload;
+	int checkInterval;
+	QString defaultLanguage;
+	QString feedUrl;
+	QStringList ignoredVersions;
+
+	bool allowVersionSkipping;
+	bool allowDelayInstallUntilQuit;
+	bool isCheckingForUpdates;
+	bool isInteractive;
+	qint64 lastUpdateCheck;
+	QNetworkAccessManager *networkAccess;
+	QSettings *settings;
+	QTimer *timer;
+	QGlitterDownloader *downloader;
+	QString pendingUpdate;
+};

@@ -20,6 +20,32 @@
 
 #pragma once
 
-#include "QGlitterAppcast.h"
 #include "QGlitterAppcastItem.h"
-#include "QGlitterUpdater.h"
+#include "QGlitterObject.h"
+
+#include <QMap>
+#include <QString>
+
+class QGlitterAppcastItemPrivate : public QGlitterObjectData
+{
+	QGLITTER_DECLARE_PUBLIC(QGlitterAppcastItem);
+public:
+	QGlitterAppcastItemPrivate();
+	QGlitterAppcastItemPrivate(const QGlitterAppcastItemPrivate &other);
+
+	void clone(const QGlitterAppcastItemPrivate &other);
+
+	QString deltaFrom;
+	QMap<QString, QString> descriptions;
+	QString mimeType;
+	QString minimumSystemVersion;
+	QString operatingSystem;
+	QDateTime publicationDate;
+	QMap<QString, QString> releaseNotesUrls;
+	QString shortVersionString;
+	QString signature;
+	int size;
+	QString title;
+	QString url;
+	QString version;
+};

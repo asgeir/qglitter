@@ -19,42 +19,49 @@
 // SOFTWARE.
 
 #include "QGlitterAppcast.h"
+#include "QGlitterAppcast_p.h"
 
 static const char * const kSparkleNamespace = "http://www.andymatuschak.org/xml-namespaces/sparkle";
 
 QGlitterAppcast::QGlitterAppcast()
+	: QGlitterObject(new QGlitterAppcastPrivate)
 {
 }
 
 QList<QGlitterAppcastItem> QGlitterAppcast::items() const
 {
-	return m_items;
+	const QGLITTER_D(QGlitterAppcast);
+	return d->items;
 }
 
 bool QGlitterAppcast::read(QIODevice *data)
 {
-	m_xmlReader.setDevice(data);
+	QGLITTER_D(QGlitterAppcast);
 
-	if (m_xmlReader.readNextStartElement()) {
-		if (m_xmlReader.name() == "rss" && m_xmlReader.attributes().value("version") == "2.0") {
+	d->xmlReader.setDevice(data);
+
+	if (d->xmlReader.readNextStartElement()) {
+		if (d->xmlReader.name() == "rss" && d->xmlReader.attributes().value("version") == "2.0") {
 			readAppcast();
 		} else {
-			m_xmlReader.raiseError(QObject::tr("The file is not an RSS version 2.0 file."));
+			d->xmlReader.raiseError(QObject::tr("The file is not an RSS version 2.0 file."));
 		}
 	}
 
-	return !m_xmlReader.error();
+	return !d->xmlReader.error();
 }
 
 void QGlitterAppcast::readAppcast()
 {
+	QGLITTER_D(QGlitterAppcast);
+
 	bool foundChannel = false;
-	while (m_xmlReader.readNextStartElement()) {
-		if (m_xmlReader.name() == "channel" && foundChannel == false) {
+	while (d->xmlReader.readNextStartElement()) {
+		if (d->xmlReader.name() == "channel" && foundChannel == false) {
 			readChannel();
 			foundChannel = true;
 		} else {
-			m_xmlReader.raiseError(QObject::tr("Unrecognized RSS tag or multiple channels"));
+			d->xmlReader.raiseError(QObject::tr("Unrecognized RSS tag or multiple channels"));
 			return;
 		}
 	}
@@ -62,19 +69,21 @@ void QGlitterAppcast::readAppcast()
 
 void QGlitterAppcast::readChannel()
 {
-	while (m_xmlReader.readNextStartElement()) {
-		if (m_xmlReader.name() == "title") {
-			m_title = m_xmlReader.readElementText();
-		} else if (m_xmlReader.name() == "link") {
-			m_link = m_xmlReader.readElementText();
-		} else if (m_xmlReader.name() == "description") {
-			m_description = m_xmlReader.readElementText();
-		} else if (m_xmlReader.name() == "language") {
-			m_language = m_xmlReader.readElementText();
-		} else if (m_xmlReader.name() == "item") {
+	QGLITTER_D(QGlitterAppcast);
+
+	while (d->xmlReader.readNextStartElement()) {
+		if (d->xmlReader.name() == "title") {
+			d->title = d->xmlReader.readElementText();
+		} else if (d->xmlReader.name() == "link") {
+			d->link = d->xmlReader.readElementText();
+		} else if (d->xmlReader.name() == "description") {
+			d->description = d->xmlReader.readElementText();
+		} else if (d->xmlReader.name() == "language") {
+			d->language = d->xmlReader.readElementText();
+		} else if (d->xmlReader.name() == "item") {
 			readItem();
 		} else {
-			m_xmlReader.raiseError(QObject::tr("Unrecognized RSS channel tag"));
+			d->xmlReader.raiseError(QObject::tr("Unrecognized RSS channel tag"));
 			return;
 		}
 	}
@@ -82,40 +91,42 @@ void QGlitterAppcast::readChannel()
 
 void QGlitterAppcast::readItem()
 {
+	QGLITTER_D(QGlitterAppcast);
+
 	QGlitterAppcastItem currentItem;
 	QString minimumSystemVersion;
 
-	while (m_xmlReader.readNextStartElement()) {
-		if (m_xmlReader.name() == "title") {
-			currentItem.setTitle(m_xmlReader.readElementText());
-		} else if (m_xmlReader.name() == "pubDate") {
-			currentItem.setPublicationDate(QDateTime::fromString(m_xmlReader.readElementText()));
-		} else if (m_xmlReader.name() == "releaseNotesLink" && m_xmlReader.namespaceUri() == kSparkleNamespace) {
-			QString language = m_xmlReader.attributes().value("xml:lang").toString();
+	while (d->xmlReader.readNextStartElement()) {
+		if (d->xmlReader.name() == "title") {
+			currentItem.setTitle(d->xmlReader.readElementText());
+		} else if (d->xmlReader.name() == "pubDate") {
+			currentItem.setPublicationDate(QDateTime::fromString(d->xmlReader.readElementText()));
+		} else if (d->xmlReader.name() == "releaseNotesLink" && d->xmlReader.namespaceUri() == kSparkleNamespace) {
+			QString language = d->xmlReader.attributes().value("xml:lang").toString();
 			if (language.size() == 0) {
-				if (m_language.size() == 0) {
+				if (d->language.size() == 0) {
 					language = "en";
 				} else {
-					language = m_language;
+					language = d->language;
 				}
 			}
 
-			currentItem.addReleaseNotesUrl(language, m_xmlReader.readElementText());
-		} else if (m_xmlReader.name() == "description") {
-			QString language = m_xmlReader.attributes().value("xml:lang").toString();
+			currentItem.addReleaseNotesUrl(language, d->xmlReader.readElementText());
+		} else if (d->xmlReader.name() == "description") {
+			QString language = d->xmlReader.attributes().value("xml:lang").toString();
 			if (language.size() == 0) {
-				if (m_language.size() == 0) {
+				if (d->language.size() == 0) {
 					language = "en";
 				} else {
-					language = m_language;
+					language = d->language;
 				}
 			}
 
-			currentItem.addDescription(language, m_xmlReader.readElementText());
-		} else if (m_xmlReader.name() == "minimumSystemVersion" && m_xmlReader.namespaceUri() == kSparkleNamespace) {
-			minimumSystemVersion = m_xmlReader.readElementText();
-		} else if (m_xmlReader.name() == "enclosure") {
-			QXmlStreamAttributes attributes = m_xmlReader.attributes();
+			currentItem.addDescription(language, d->xmlReader.readElementText());
+		} else if (d->xmlReader.name() == "minimumSystemVersion" && d->xmlReader.namespaceUri() == kSparkleNamespace) {
+			minimumSystemVersion = d->xmlReader.readElementText();
+		} else if (d->xmlReader.name() == "enclosure") {
+			QXmlStreamAttributes attributes = d->xmlReader.attributes();
 
 			if (attributes.hasAttribute("url") && attributes.hasAttribute("length") && attributes.hasAttribute("type")) {
 				currentItem.setMimeType(attributes.value("type").toString());
@@ -129,16 +140,16 @@ void QGlitterAppcast::readItem()
 				currentItem.setSignature(attributes.value(kSparkleNamespace, "dsaSignature").toString());
 				currentItem.setVersion(attributes.value(kSparkleNamespace, "version").toString());
 			} else {
-				m_xmlReader.raiseError(QObject::tr("Invalid RSS enclosure"));
+				d->xmlReader.raiseError(QObject::tr("Invalid RSS enclosure"));
 				return;
 			}
 		} else {
-			m_xmlReader.raiseError(QObject::tr("Unrecognized RSS item tag"));
+			d->xmlReader.raiseError(QObject::tr("Unrecognized RSS item tag"));
 			return;
 		}
 	}
 
-	m_xmlReader.skipCurrentElement();
+	d->xmlReader.skipCurrentElement();
 
-	m_items.append(currentItem);
+	d->items.append(currentItem);
 }

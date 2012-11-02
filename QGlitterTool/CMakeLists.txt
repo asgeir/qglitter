@@ -16,4 +16,4 @@ set(SOURCES
 	main.cpp)
 
 add_executable(qglitter-tool ${SOURCES})
-target_link_libraries(qglitter-tool QGlitter ${QT_LIBRARIES} ${PLATFORM_LIBS})
+target_link_libraries(qglitter-tool qglitter ${QT_LIBRARIES} ${PLATFORM_LIBS})

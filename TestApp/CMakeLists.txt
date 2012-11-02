@@ -22,4 +22,4 @@ QT4_ADD_RESOURCES(RCC_RESOURCES Resources.qrc)
 QT4_WRAP_CPP(HEADERS_MOC ${HEADERS})
 
 add_executable(TestApp ${SOURCES} ${RCC_RESOURCES} ${HEADERS_MOC})
-target_link_libraries(TestApp QGlitter ${QT_LIBRARIES} ${PLATFORM_LIBS})
+target_link_libraries(TestApp qglitter ${QT_LIBRARIES} ${PLATFORM_LIBS})

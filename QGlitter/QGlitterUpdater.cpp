@@ -19,6 +19,7 @@
 // SOFTWARE.
 
 #include "QGlitterUpdater.h"
+#include "QGlitterUpdater_p.h"
 #include "QGlitterAppcast.h"
 #include "QGlitterDownloader.h"
 #include "QGlitterUpdateAlert.h"
@@ -52,163 +53,185 @@ static const int kOneDay = kOneHour * 24;
 static const int kBackgroundDownload = 0;
 static const int kInteractiveDownload = 1;
 
+QGlitterUpdaterPrivate::QGlitterUpdaterPrivate()
+	: applicationIcon(0)
+	, internalVersion()
+	, automaticCheck(true)
+	, automaticDownload(false)
+	, checkInterval(kOneDay)
+	, defaultLanguage("en")
+	, feedUrl("")
+	, allowVersionSkipping(true)
+	, allowDelayInstallUntilQuit(true)
+	, isCheckingForUpdates(false)
+	, isInteractive(false)
+	, lastUpdateCheck(kNeverUpdated)
+	, networkAccess(0)
+	, settings(0)
+	, timer(0)
+	, downloader(0)
+	, pendingUpdate("")
+{
+}
+
 QGlitterUpdater::QGlitterUpdater(bool allowVersionSkipping, bool allowDelayInstalUntilQuit, int checkInterval, QObject *parent)
 	: QObject(parent)
-	, m_applicationIcon(0)
-	, m_internalVersion()
-	, m_automaticCheck(true)
-	, m_automaticDownload(false)
-	, m_checkInterval((checkInterval == 0) ? kOneDay : checkInterval)
-	, m_defaultLanguage("en")
-	, m_feedUrl("")
-	, m_allowVersionSkipping(allowVersionSkipping)
-	, m_allowDelayInstallUntilQuit(allowDelayInstalUntilQuit)
-	, m_isCheckingForUpdates(false)
-	, m_isInteractive(false)
-	, m_lastUpdateCheck(kNeverUpdated)
-	, m_networkAccess(0)
-	, m_settings(0)
-	, m_timer(0)
-	, m_downloader(0)
-	, m_pendingUpdate("")
+	, QGlitterObject(new QGlitterUpdaterPrivate)
 {
+	QGLITTER_D(QGlitterUpdater);
+
+	d->checkInterval = (checkInterval == 0) ? kOneDay : checkInterval;
+	d->allowVersionSkipping = allowVersionSkipping;
+	d->allowDelayInstallUntilQuit = allowDelayInstalUntilQuit;
+
 	qglitter_cryptoInit();
 
-	m_defaultLanguage = QLocale::system().name();
-	m_defaultLanguage.truncate(m_defaultLanguage.lastIndexOf('_'));
+	d->defaultLanguage = QLocale::system().name();
+	d->defaultLanguage.truncate(d->defaultLanguage.lastIndexOf('_'));
 
 	connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(aboutToQuit()));
 
-	m_timer = new QTimer(this);
-	connect(m_timer, SIGNAL(timeout()), this, SLOT(updateTimeout()));
+	d->timer = new QTimer(this);
+	connect(d->timer, SIGNAL(timeout()), this, SLOT(updateTimeout()));
 
 	QString settingsDomain = QString("%1.%2").arg(qApp->organizationDomain()).arg(qApp->applicationName().replace(' ', ""));
-	m_settings = new QSettings(QSettings::UserScope, "QGlitter", settingsDomain, this);
+	d->settings = new QSettings(QSettings::UserScope, "QGlitter", settingsDomain, this);
 
-	m_automaticCheck = m_settings->value(kAutomaticUpdateCheck, true).toBool();
-	m_automaticDownload = m_settings->value(kAutomaticDownload, false).toBool();
-	m_checkInterval = m_settings->value(kCheckInterval, kOneDay).toInt();
-	m_lastUpdateCheck = m_settings->value(kLastCheckTime, kNeverUpdated).value<qint64>();
-	m_ignoredVersions = m_settings->value(kIgnoredVersions, QStringList()).toStringList();
+	d->automaticCheck = d->settings->value(kAutomaticUpdateCheck, true).toBool();
+	d->automaticDownload = d->settings->value(kAutomaticDownload, false).toBool();
+	d->checkInterval = d->settings->value(kCheckInterval, kOneDay).toInt();
+	d->lastUpdateCheck = d->settings->value(kLastCheckTime, kNeverUpdated).value<qint64>();
+	d->ignoredVersions = d->settings->value(kIgnoredVersions, QStringList()).toStringList();
 
-	if (!m_settings->value(kIsFirstLaunch, true).toBool()) {
-		if (m_lastUpdateCheck == kNeverUpdated) {
-			m_timer->start(0);
+	if (!d->settings->value(kIsFirstLaunch, true).toBool()) {
+		if (d->lastUpdateCheck == kNeverUpdated) {
+			d->timer->start(0);
 		} else {
 			qint64 currentTime = QDateTime::currentMSecsSinceEpoch() / 1000;
-			qint64 timeUntilNextCheck = m_checkInterval - (currentTime - m_lastUpdateCheck);
+			qint64 timeUntilNextCheck = d->checkInterval - (currentTime - d->lastUpdateCheck);
 			qint64 nextDueTime = (timeUntilNextCheck < 0) ? 0 : timeUntilNextCheck;
 
-			m_timer->start(nextDueTime * 1000);
+			d->timer->start(nextDueTime * 1000);
 		}
 	}
 
-	m_settings->setValue(kIsFirstLaunch, false);
+	d->settings->setValue(kIsFirstLaunch, false);
 
-	m_networkAccess = new QNetworkAccessManager(this);
-	connect(m_networkAccess, SIGNAL(finished(QNetworkReply *)), this, SLOT(appcastDownloaded(QNetworkReply *)));
+	d->networkAccess = new QNetworkAccessManager(this);
+	connect(d->networkAccess, SIGNAL(finished(QNetworkReply *)), this, SLOT(appcastDownloaded(QNetworkReply *)));
 
-	m_downloader = new QGlitterDownloader(this);
+	d->downloader = new QGlitterDownloader(this);
 }
+
 QGlitterUpdater::~QGlitterUpdater()
 {
-	if (m_applicationIcon) {
-		delete m_applicationIcon;
-	}
 }
 
 const QPixmap *QGlitterUpdater::applicationIcon() const
 {
-	return m_applicationIcon;
+	const QGLITTER_D(QGlitterUpdater);
+	return d->applicationIcon.data();
 }
 
 void QGlitterUpdater::setApplicationIcon(const QPixmap *icon)
 {
-	if (m_applicationIcon) {
-		delete m_applicationIcon;
-	}
-
-	m_applicationIcon = new QPixmap(*icon);
+	QGLITTER_D(QGlitterUpdater);
+	d->applicationIcon.reset(new QPixmap(*icon));
 }
 
 bool QGlitterUpdater::automaticallyCheckForUpdates() const
 {
-	return m_automaticCheck;
+	const QGLITTER_D(QGlitterUpdater);
+	return d->automaticCheck;
 }
 
 void QGlitterUpdater::setAutomaticallyCheckForUpdates(bool automaticallyCheckForUpdates)
 {
-	m_automaticCheck = automaticallyCheckForUpdates;
-	m_settings->setValue(kAutomaticUpdateCheck, m_automaticCheck);
+	QGLITTER_D(QGlitterUpdater);
+	d->automaticCheck = automaticallyCheckForUpdates;
+	d->settings->setValue(kAutomaticUpdateCheck, d->automaticCheck);
 }
 
 bool QGlitterUpdater::automaticallyDownloadUpdates() const
 {
-	return m_automaticDownload;
+	const QGLITTER_D(QGlitterUpdater);
+	return d->automaticDownload;
 }
 
 void QGlitterUpdater::setAutomaticallyDownloadUpdates(bool automaticallyDownloadUpdates)
 {
-	m_automaticDownload = automaticallyDownloadUpdates;
-	m_settings->setValue(kAutomaticDownload, m_automaticDownload);
+	QGLITTER_D(QGlitterUpdater);
+	d->automaticDownload = automaticallyDownloadUpdates;
+	d->settings->setValue(kAutomaticDownload, d->automaticDownload);
 }
 
 int QGlitterUpdater::checkInterval() const
 {
-	return m_checkInterval;
+	const QGLITTER_D(QGlitterUpdater);
+	return d->checkInterval;
 }
 
 void QGlitterUpdater::setCheckInterval(int checkInterval)
 {
+	QGLITTER_D(QGlitterUpdater);
+
 	if (checkInterval < kOneHour) {
 		checkInterval = kOneHour;
 	}
 
-	m_checkInterval = checkInterval;
-	m_settings->setValue(kCheckInterval, m_checkInterval);
+	d->checkInterval = checkInterval;
+	d->settings->setValue(kCheckInterval, d->checkInterval);
 
-	if (m_timer) {
-		m_timer->setInterval(m_checkInterval * 1000);
+	if (d->timer) {
+		d->timer->setInterval(d->checkInterval * 1000);
 	}
 }
 
 QString QGlitterUpdater::defaultLanguage() const
 {
-	return m_defaultLanguage;
+	const QGLITTER_D(QGlitterUpdater);
+	return d->defaultLanguage;
 }
 
 void QGlitterUpdater::setDefaultLanguage(QString language)
 {
-	m_defaultLanguage = language;
+	QGLITTER_D(QGlitterUpdater);
+	d->defaultLanguage = language;
 }
 
 QString QGlitterUpdater::feedUrl() const
 {
-	return m_feedUrl;
+	const QGLITTER_D(QGlitterUpdater);
+	return d->feedUrl;
 }
 
 void QGlitterUpdater::setFeedUrl(QString feedUrl)
 {
-	m_feedUrl = feedUrl;
+	QGLITTER_D(QGlitterUpdater);
+	d->feedUrl = feedUrl;
 }
 
 QByteArray QGlitterUpdater::publicKey() const
 {
-	return m_publicKey;
+	const QGLITTER_D(QGlitterUpdater);
+	return d->publicKey;
 }
 
 void QGlitterUpdater::setPublicKey(const QByteArray &publicKey)
 {
-	m_publicKey = publicKey;
-	m_downloader->setPublicKey(publicKey);
+	QGLITTER_D(QGlitterUpdater);
+	d->publicKey = publicKey;
+	d->downloader->setPublicKey(publicKey);
 }
 
 
 void QGlitterUpdater::checkForUpdates(const QGlitterAppcast &appcast)
 {
+	QGLITTER_D(QGlitterUpdater);
+
 	QString currentVersion;
-	if (m_internalVersion.size()) {
-		currentVersion = m_internalVersion;
+	if (d->internalVersion.size()) {
+		currentVersion = d->internalVersion;
 	} else {
 		currentVersion = qApp->applicationVersion();
 	}
@@ -218,8 +241,8 @@ void QGlitterUpdater::checkForUpdates(const QGlitterAppcast &appcast)
 
 	QList<QGlitterAppcastItem> appcastItems = appcast.items();
 	for (int i = 0; i < appcastItems.size(); ++i) {
-		if (!m_isInteractive) {
-			if (m_ignoredVersions.indexOf(appcastItems[i].version()) >= 0) {
+		if (!d->isInteractive) {
+			if (d->ignoredVersions.indexOf(appcastItems[i].version()) >= 0) {
 				continue;
 			}
 		}
@@ -241,25 +264,25 @@ void QGlitterUpdater::checkForUpdates(const QGlitterAppcast &appcast)
 	if (currentBestUpdate.version() > currentVersion) {
 		emit foundUpdate(currentBestUpdate);
 
-		if (!m_automaticDownload) {
+		if (!d->automaticDownload) {
 
 			QGlitterUpdateAlert *updateAlert = new QGlitterUpdateAlert();
 
-			if (m_applicationIcon) {
-				updateAlert->setApplicationIcon(m_applicationIcon);
+			if (d->applicationIcon) {
+				updateAlert->setApplicationIcon(d->applicationIcon.data());
 			}
-			updateAlert->setAutomaticallyDownloadUpdates(m_automaticDownload);
-			updateAlert->setDefaultLanguage(m_defaultLanguage);
+			updateAlert->setAutomaticallyDownloadUpdates(d->automaticDownload);
+			updateAlert->setDefaultLanguage(d->defaultLanguage);
 			updateAlert->setAppcastItem(currentBestUpdate);
-			updateAlert->setAllowSkipping(m_allowVersionSkipping);
+			updateAlert->setAllowSkipping(d->allowVersionSkipping);
 
 			if (updateAlert->exec()) {
 				downloadAndInstall(kInteractiveDownload, currentBestUpdate);
 			}
 
 			if (updateAlert->skipVersion()) {
-				m_ignoredVersions.append(currentBestUpdate.version());
-				m_settings->setValue(kIgnoredVersions, m_ignoredVersions);
+				d->ignoredVersions.append(currentBestUpdate.version());
+				d->settings->setValue(kIgnoredVersions, d->ignoredVersions);
 			}
 
 			if (updateAlert->automaticallyDownloadUpdates()) {
@@ -277,9 +300,11 @@ void QGlitterUpdater::checkForUpdates(const QGlitterAppcast &appcast)
 
 void QGlitterUpdater::aboutToQuit()
 {
-	if (m_pendingUpdate.length() > 0) {
+	QGLITTER_D(QGlitterUpdater);
+
+	if (d->pendingUpdate.length() > 0) {
 		emit installingUpdate();
-		if (qglitter_installUpdate(m_pendingUpdate)) {
+		if (qglitter_installUpdate(d->pendingUpdate)) {
 			emit finishedInstallingUpdate();
 		}
 	}
@@ -287,21 +312,23 @@ void QGlitterUpdater::aboutToQuit()
 
 void QGlitterUpdater::automaticUpdateDownloaded(int errorCode, QString installerPath)
 {
+	QGLITTER_D(QGlitterUpdater);
+
 	if (errorCode != QGlitterDownloader::NoError) {
 		return;
 	}
 
 	// Disconnect in case this update is canceled and the next update is not automatic
-	disconnect(m_downloader, SIGNAL(downloadFinished(int, QString)), this, SLOT(automaticUpdateDownloaded(int, QString)));
+	disconnect(d->downloader, SIGNAL(downloadFinished(int, QString)), this, SLOT(automaticUpdateDownloaded(int, QString)));
 
 	// TODO: should probably allow for automatic installing as well
 	QGlitterAutomaticUpdateAlert *updateAlert = new QGlitterAutomaticUpdateAlert();
 
-	if (m_applicationIcon) {
-		updateAlert->setApplicationIcon(m_applicationIcon);
+	if (d->applicationIcon) {
+		updateAlert->setApplicationIcon(d->applicationIcon.data());
 	}
-	updateAlert->setAllowSkipping(m_allowVersionSkipping);
-	updateAlert->setAllowDelaying(m_allowDelayInstallUntilQuit);
+	updateAlert->setAllowSkipping(d->allowVersionSkipping);
+	updateAlert->setAllowDelaying(d->allowDelayInstallUntilQuit);
 
 	updateAlert->exec();
 	updateAlert->deleteLater();
@@ -309,8 +336,8 @@ void QGlitterUpdater::automaticUpdateDownloaded(int errorCode, QString installer
 	if (updateAlert->result() == QDialog::Rejected) {
 		emit updateCanceled();
 	} else {
-		if (m_allowDelayInstallUntilQuit && updateAlert->delayUntilQuit()) {
-			m_pendingUpdate = installerPath;
+		if (d->allowDelayInstallUntilQuit && updateAlert->delayUntilQuit()) {
+			d->pendingUpdate = installerPath;
 		} else {
 			emit installingUpdate();
 			if (qglitter_installUpdate(installerPath)) {
@@ -322,44 +349,48 @@ void QGlitterUpdater::automaticUpdateDownloaded(int errorCode, QString installer
 
 void QGlitterUpdater::downloadAndInstall(int mode, const QGlitterAppcastItem &update)
 {
-	m_downloader->downloadUpdate(update.url(), update.signature());
+	QGLITTER_D(QGlitterUpdater);
+
+	d->downloader->downloadUpdate(update.url(), update.signature());
 
 	if (mode == kInteractiveDownload) {
 		QGlitterUpdateStatus *downloadStatus = new QGlitterUpdateStatus();
 
-		if (m_applicationIcon) {
-			downloadStatus->setApplicationIcon(m_applicationIcon);
+		if (d->applicationIcon) {
+			downloadStatus->setApplicationIcon(d->applicationIcon.data());
 		}
 
-		connect(m_downloader, SIGNAL(downloadProgress(qint64, qint64)), downloadStatus, SLOT(downloadProgress(qint64, qint64)));
-		connect(m_downloader, SIGNAL(downloadFinished(int, QString)), downloadStatus, SLOT(downloadFinished(int, QString)));
+		connect(d->downloader, SIGNAL(downloadProgress(qint64, qint64)), downloadStatus, SLOT(downloadProgress(qint64, qint64)));
+		connect(d->downloader, SIGNAL(downloadFinished(int, QString)), downloadStatus, SLOT(downloadFinished(int, QString)));
 
 		downloadStatus->exec();
 		downloadStatus->deleteLater();
 
 		if (downloadStatus->result() == QDialog::Rejected) {
-			m_downloader->cancelDownload();
+			d->downloader->cancelDownload();
 			emit updateCanceled();
-		} else if (m_downloader->errorCode() == QGlitterDownloader::NoError) {
+		} else if (d->downloader->errorCode() == QGlitterDownloader::NoError) {
 			emit installingUpdate();
-			if (qglitter_installUpdate(m_downloader->installerFile())) {
+			if (qglitter_installUpdate(d->downloader->installerFile())) {
 				emit finishedInstallingUpdate();
 			}
 		}
 	} else {
-		connect(m_downloader, SIGNAL(downloadFinished(int, QString)), this, SLOT(automaticUpdateDownloaded(int, QString)));
+		connect(d->downloader, SIGNAL(downloadFinished(int, QString)), this, SLOT(automaticUpdateDownloaded(int, QString)));
 	}
 }
 
 void QGlitterUpdater::updateCheck()
 {
-	if (m_isCheckingForUpdates) {
+	QGLITTER_D(QGlitterUpdater);
+
+	if (d->isCheckingForUpdates) {
 		return;
 	}
 
-	m_isInteractive = true;
-	m_isCheckingForUpdates = true;
-	QNetworkReply *reply = m_networkAccess->get(QNetworkRequest(QUrl(m_feedUrl)));
+	d->isInteractive = true;
+	d->isCheckingForUpdates = true;
+	QNetworkReply *reply = d->networkAccess->get(QNetworkRequest(QUrl(d->feedUrl)));
 
 	QGlitterUpdateCheckStatus *updateCheckStatus = new QGlitterUpdateCheckStatus();
 	connect(this, SIGNAL(foundUpdate(const QGlitterAppcastItem &)), updateCheckStatus, SLOT(close()));
@@ -367,23 +398,26 @@ void QGlitterUpdater::updateCheck()
 	connect(this, SIGNAL(errorLoadingAppcast()), updateCheckStatus, SLOT(noUpdatesAvailable()));
 
 	updateCheckStatus->setNetworkReply(reply);
-	if (m_applicationIcon) {
-		updateCheckStatus->setApplicationIcon(m_applicationIcon);
+	if (d->applicationIcon) {
+		updateCheckStatus->setApplicationIcon(d->applicationIcon.data());
 	}
 
 	updateCheckStatus->exec();
 	updateCheckStatus->deleteLater();
 
-	m_isInteractive = false;
+	d->isInteractive = false;
 }
 
 void QGlitterUpdater::backgroundUpdateCheck()
 {
-	m_timer->singleShot(0, this, SLOT(updateTimeout()));
+	QGLITTER_D(QGlitterUpdater);
+	d->timer->singleShot(0, this, SLOT(updateTimeout()));
 }
 
 void QGlitterUpdater::appcastDownloaded(QNetworkReply *reply)
 {
+	QGLITTER_D(QGlitterUpdater);
+
 	if (reply->error() == QNetworkReply::NoError) {
 		QGlitterAppcast appcast;
 
@@ -395,20 +429,22 @@ void QGlitterUpdater::appcastDownloaded(QNetworkReply *reply)
 		}
 	}
 
-	m_isCheckingForUpdates = false;
-	m_lastUpdateCheck = QDateTime::currentMSecsSinceEpoch() / 1000;
-	m_timer->setInterval(m_checkInterval * 1000);
+	d->isCheckingForUpdates = false;
+	d->lastUpdateCheck = QDateTime::currentMSecsSinceEpoch() / 1000;
+	d->timer->setInterval(d->checkInterval * 1000);
 
 	reply->deleteLater();
 }
 
 void QGlitterUpdater::updateTimeout()
 {
-	if (m_isCheckingForUpdates) {
+	QGLITTER_D(QGlitterUpdater);
+
+	if (d->isCheckingForUpdates) {
 		return;
 	}
 
-	m_isCheckingForUpdates = true;
-	m_networkAccess->get(QNetworkRequest(QUrl(m_feedUrl)));
+	d->isCheckingForUpdates = true;
+	d->networkAccess->get(QNetworkRequest(QUrl(d->feedUrl)));
 }
 

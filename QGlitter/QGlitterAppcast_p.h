@@ -21,5 +21,19 @@
 #pragma once
 
 #include "QGlitterAppcast.h"
-#include "QGlitterAppcastItem.h"
-#include "QGlitterUpdater.h"
+#include "QGlitterObject.h"
+
+#include <QXmlStreamReader>
+
+class QGlitterAppcastPrivate : public QGlitterObjectData
+{
+	QGLITTER_DECLARE_PUBLIC(QGlitterAppcast);
+public:
+	QString title;
+	QString description;
+	QString link;
+	QString language;
+
+	QList<QGlitterAppcastItem> items;
+	QXmlStreamReader xmlReader;
+};

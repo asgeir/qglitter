@@ -20,14 +20,20 @@
 
 #pragma once
 
+#include "QGlitterObject.h"
+
 #include <QDateTime>
 #include <QMap>
 #include <QString>
 
-class QGlitterAppcastItem
+class QGlitterAppcastItemPrivate;
+class QGlitterAppcastItem : public QGlitterObject
 {
 public:
 	QGlitterAppcastItem();
+	QGlitterAppcastItem(const QGlitterAppcastItem &other);
+
+	QGlitterAppcastItem &operator=(const QGlitterAppcastItem &rhs);
 
 	QString deltaFrom() const;
 	void setDeltaFrom(QString deltaFrom);
@@ -69,17 +75,5 @@ public:
 	void setVersion(QString version);
 
 private:
-	QString m_deltaFrom;
-	QMap<QString, QString> m_descriptions;
-	QString m_mimeType;
-	QString m_minimumSystemVersion;
-	QString m_operatingSystem;
-	QDateTime m_publicationDate;
-	QMap<QString, QString> m_releaseNotesUrls;
-	QString m_shortVersionString;
-	QString m_signature;
-	int m_size;
-	QString m_title;
-	QString m_url;
-	QString m_version;
+	QGLITTER_DECLARE_PRIVATE(QGlitterAppcastItem);
 };

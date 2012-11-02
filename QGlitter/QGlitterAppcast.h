@@ -21,13 +21,14 @@
 #pragma once
 
 #include "QGlitterAppcastItem.h"
+#include "QGlitterObject.h"
 
 #include <QList>
-#include <QXmlStreamReader>
 
 class QIODevice;
 
-class QGlitterAppcast
+class QGlitterAppcastPrivate;
+class QGlitterAppcast : public QGlitterObject
 {
 public:
 	QGlitterAppcast();
@@ -41,11 +42,5 @@ private:
 	void readChannel();
 	void readItem();
 
-	QString m_title;
-	QString m_description;
-	QString m_link;
-	QString m_language;
-
-	QList<QGlitterAppcastItem> m_items;
-	QXmlStreamReader m_xmlReader;
+	QGLITTER_DECLARE_PRIVATE(QGlitterAppcast);
 };

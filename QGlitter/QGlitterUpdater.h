@@ -20,19 +20,17 @@
 
 #pragma once
 
-#include <QObject>
-#include <QStringList>
+#include "QGlitterObject.h"
 
-class QNetworkAccessManager;
-class QNetworkReply;
-class QPixmap;
-class QSettings;
+#include <QObject>
+
 class QGlitterAppcast;
 class QGlitterAppcastItem;
-class QGlitterDownloader;
-class QTimer;
+class QNetworkReply;
+class QPixmap;
 
-class QGlitterUpdater : public QObject
+class QGlitterUpdaterPrivate;
+class QGlitterUpdater : public QObject, public QGlitterObject
 {
 	Q_OBJECT
 public:
@@ -86,25 +84,5 @@ private:
 	void checkForUpdates(const QGlitterAppcast &appcast);
 	void downloadAndInstall(int mode, const QGlitterAppcastItem &update);
 
-	QPixmap *m_applicationIcon;
-	QString m_internalVersion;
-	QByteArray m_publicKey;
-
-	bool m_automaticCheck;
-	bool m_automaticDownload;
-	int m_checkInterval;
-	QString m_defaultLanguage;
-	QString m_feedUrl;
-	QStringList m_ignoredVersions;
-
-	bool m_allowVersionSkipping;
-	bool m_allowDelayInstallUntilQuit;
-	bool m_isCheckingForUpdates;
-	bool m_isInteractive;
-	qint64 m_lastUpdateCheck;
-	QNetworkAccessManager *m_networkAccess;
-	QSettings *m_settings;
-	QTimer *m_timer;
-	QGlitterDownloader *m_downloader;
-	QString m_pendingUpdate;
+	QGLITTER_DECLARE_PRIVATE(QGlitterUpdater);
 };

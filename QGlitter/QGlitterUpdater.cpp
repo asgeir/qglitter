@@ -211,6 +211,18 @@ void QGlitterUpdater::setFeedUrl(QString feedUrl)
 	d->feedUrl = feedUrl;
 }
 
+QString QGlitterUpdater::internalVersion() const
+{
+	const QGLITTER_D(QGlitterUpdater);
+	return d->internalVersion;
+}
+
+void QGlitterUpdater::setInternalVersion(QString internalVersion)
+{
+	QGLITTER_D(QGlitterUpdater);
+	d->internalVersion = internalVersion;
+}
+
 QByteArray QGlitterUpdater::publicKey() const
 {
 	const QGLITTER_D(QGlitterUpdater);

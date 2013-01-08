@@ -76,7 +76,7 @@ void QGlitterUpdateAlert::setAppcastItem(const QGlitterAppcastItem &appcastItem)
 
 	QString message = QObject::tr("%1 %2 is now available &mdash; you have %3. Would you like to download it now?");
 	message = message.arg(qApp->applicationName());
-	message = message.arg(appcastItem.version());
+	message = message.arg(appcastItem.shortVersionString());
 	message = message.arg(qApp->applicationVersion());
 	m_ui->messageLabel->setText(QString("<html><body><p>%1</p></body></html>").arg(message));
 

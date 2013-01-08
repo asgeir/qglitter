@@ -237,7 +237,7 @@ void QGlitterUpdater::checkForUpdates(const QGlitterAppcast &appcast)
 	}
 
 	QGlitterAppcastItem currentBestUpdate;
-	currentBestUpdate.setVersion(qApp->applicationVersion());
+	currentBestUpdate.setVersion(currentVersion);
 
 	QList<QGlitterAppcastItem> appcastItems = appcast.items();
 	for (int i = 0; i < appcastItems.size(); ++i) {
@@ -256,7 +256,7 @@ void QGlitterUpdater::checkForUpdates(const QGlitterAppcast &appcast)
 		}
 
 		if ((appcastItems[i].version() > currentBestUpdate.version()) ||
-			(appcastItems[i].version() == currentBestUpdate.version() && appcastItems[i].deltaFrom() == currentVersion)) {
+			(appcastItems[i].version() >= currentBestUpdate.version() && appcastItems[i].deltaFrom() == currentVersion)) {
 			currentBestUpdate = appcastItems[i];
 		}
 	}

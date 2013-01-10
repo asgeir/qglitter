@@ -58,4 +58,6 @@ public:
 	QTimer *timer;
 	QGlitterDownloader *downloader;
 	QString pendingUpdate;
+
+	VersionComparator versionComparator;
 };

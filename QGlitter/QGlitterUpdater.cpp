@@ -21,6 +21,7 @@
 #include "QGlitterUpdater.h"
 #include "QGlitterUpdater_p.h"
 #include "QGlitterAppcast.h"
+#include "QGlitterDefaultVersionComparator.h"
 #include "QGlitterDownloader.h"
 #include "QGlitterUpdateAlert.h"
 #include "QGlitterUpdateCheckStatus.h"
@@ -36,8 +37,6 @@
 #include <QNetworkReply>
 #include <QSettings>
 #include <QTimer>
-
-#include <QDebug>
 
 static const char * const kIsFirstLaunch = "QGlitter/IsFirstLaunch";
 static const char * const kAutomaticUpdateCheck = "QGlitter/AutomaticCheck";
@@ -71,6 +70,7 @@ QGlitterUpdaterPrivate::QGlitterUpdaterPrivate()
 	, timer(0)
 	, downloader(0)
 	, pendingUpdate("")
+	, versionComparator(0)
 {
 }
 
@@ -236,6 +236,22 @@ void QGlitterUpdater::setPublicKey(const QByteArray &publicKey)
 	d->downloader->setPublicKey(publicKey);
 }
 
+void QGlitterUpdater::setVersionComparator(VersionComparator comparator)
+{
+	QGLITTER_D(QGlitterUpdater);
+	d->versionComparator = comparator;
+}
+
+int QGlitterUpdater::compareVersions(const QString &lhs, const QString &rhs) const
+{
+	const QGLITTER_D(QGlitterUpdater);
+
+	if (d->versionComparator == 0) {
+		return QGlitter::defaultVersionComparator(lhs, rhs);
+	}
+
+	return d->versionComparator(lhs, rhs);
+}
 
 void QGlitterUpdater::checkForUpdates(const QGlitterAppcast &appcast)
 {
@@ -267,13 +283,13 @@ void QGlitterUpdater::checkForUpdates(const QGlitterAppcast &appcast)
 			continue;
 		}
 
-		if ((appcastItems[i].version() > currentBestUpdate.version()) ||
-			(appcastItems[i].version() >= currentBestUpdate.version() && appcastItems[i].deltaFrom() == currentVersion)) {
+		if ((compareVersions(appcastItems[i].version(), currentBestUpdate.version()) > 0) ||
+			((compareVersions(appcastItems[i].version(), currentBestUpdate.version()) >= 0) && appcastItems[i].deltaFrom() == currentVersion)) {
 			currentBestUpdate = appcastItems[i];
 		}
 	}
 
-	if (currentBestUpdate.version() > currentVersion) {
+	if (compareVersions(currentBestUpdate.version(), currentVersion) > 0) {
 		emit foundUpdate(currentBestUpdate);
 
 		if (!d->automaticDownload) {

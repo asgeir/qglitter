@@ -53,6 +53,7 @@ set(SOURCES
 	QGlitterAppcast.cpp
 	QGlitterAppcastItem.cpp
 	QGlitterAutomaticUpdateAlert.cpp
+	QGlitterDefaultVersionComparator.cpp
 	QGlitterDownloader.cpp
 	QGlitterUpdateAlert.cpp
 	QGlitterUpdateCheckStatus.cpp

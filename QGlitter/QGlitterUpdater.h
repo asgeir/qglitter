@@ -30,6 +30,8 @@ class QGlitterAppcastItem;
 class QNetworkReply;
 class QPixmap;
 
+typedef int (*VersionComparator)(const QString &, const QString &);
+
 class QGlitterUpdaterPrivate;
 class QGLITTER_EXPORTED QGlitterUpdater : public QObject, public QGlitterObject
 {
@@ -62,6 +64,8 @@ public:
 	QByteArray publicKey() const;
 	void setPublicKey(const QByteArray &publicKey);
 
+	void setVersionComparator(VersionComparator comparator);
+
 signals:
 	void errorLoadingAppcast();
 	void finishedInstallingUpdate();
@@ -83,6 +87,7 @@ private slots:
 
 private:
 	void checkForUpdates(const QGlitterAppcast &appcast);
+	int compareVersions(const QString &lhs, const QString &rhs) const;
 	void downloadAndInstall(int mode, const QGlitterAppcastItem &update);
 
 	QGLITTER_DECLARE_PRIVATE(QGlitterUpdater);

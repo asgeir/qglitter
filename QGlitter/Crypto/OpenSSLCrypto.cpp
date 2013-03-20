@@ -31,7 +31,7 @@
 
 #include <cstdio>
 
-#ifdef WIN32
+#if defined WIN32 && !defined __MINGW32__
 #include <openssl/applink.c>
 #endif
 

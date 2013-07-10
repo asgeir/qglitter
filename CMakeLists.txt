@@ -9,7 +9,7 @@ if(APPLE)
 	set(CMAKE_OSX_DEPLOYMENT_TARGET 10.7)
 
 	if(CMAKE_OSX_SYSROOT STREQUAL "")
-		set(CMAKE_OSX_SYSROOT "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk")
+        execute_process(COMMAND xcodebuild -version -sdk macosx Path OUTPUT_VARIABLE CMAKE_OSX_SYSROOT OUTPUT_STRIP_TRAILING_WHITESPACE)
 	endif()
 endif()
 

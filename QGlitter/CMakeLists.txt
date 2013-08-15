@@ -44,7 +44,7 @@ if(LINUX)
 		Platform/Linux/Linux.cpp)
 endif()
 
-find_package(Qt4 REQUIRED COMPONENTS QtCore QtGui QtNetwork QtWebKit)
+find_package(Qt4 REQUIRED COMPONENTS QtCore QtGui QtNetwork)
 
 include(${QT_USE_FILE})
 add_definitions(${QT_DEFINITIONS})

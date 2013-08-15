@@ -23,6 +23,7 @@
 #include "QGlitterAppcastItem.h"
 
 #include <QDialog>
+#include <QGlitterDownloader.h>
 
 class QPixmap;
 class Ui_QGlitterUpdateAlert;
@@ -50,6 +51,7 @@ public:
 private slots:
 	void toggleSkipVersion();
 	void toggleAutomaticDownloads();
+    void downloadFinished(int errorCode, QString pathToFile);
 
 private:
 	Ui_QGlitterUpdateAlert *m_ui;
@@ -58,4 +60,7 @@ private:
 	QGlitterAppcastItem m_appcastItem;
 	bool m_skipVersion;
 	bool m_automaticDownloads;
+    QGlitterDownloader m_releaseNotesDownloader;
+    
+    void downloadReleaseNotes(const QString &url);
 };

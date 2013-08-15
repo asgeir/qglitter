@@ -132,7 +132,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QWebView" name="releaseNotes">
+      <widget class="QTextBrowser" name="releaseNotes">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
          <horstretch>0</horstretch>
@@ -144,11 +144,6 @@
          <width>0</width>
          <height>177</height>
         </size>
-       </property>
-       <property name="url">
-        <url>
-         <string>about:blank</string>
-        </url>
        </property>
       </widget>
      </item>
@@ -217,13 +212,6 @@
    </item>
   </layout>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>QWebView</class>
-   <extends>QWidget</extends>
-   <header>QtWebKit/QWebView</header>
-  </customwidget>
- </customwidgets>
  <tabstops>
   <tabstop>installUpdateButton</tabstop>
   <tabstop>remindMeLaterButton</tabstop>

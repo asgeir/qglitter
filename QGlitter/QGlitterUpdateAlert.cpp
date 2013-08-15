@@ -23,6 +23,7 @@
 #include "QGlitterCommon.h"
 
 #include <QPixmap>
+#include <QFile>
 
 QGlitterUpdateAlert::QGlitterUpdateAlert(QWidget *parent, Qt::WindowFlags f)
 	: QDialog(parent, f | Qt::Dialog | Qt::CustomizeWindowHint | Qt::WindowCloseButtonHint)
@@ -66,6 +67,12 @@ void QGlitterUpdateAlert::setAllowSkipping(bool allowSkipping)
 	m_ui->skipVersionButton->setVisible(allowSkipping);
 }
 
+void QGlitterUpdateAlert::downloadReleaseNotes(const QString &url)
+{
+    connect(&m_releaseNotesDownloader, SIGNAL(downloadFinished(int, QString)), this, SLOT(downloadFinished(int,QString)));
+    m_releaseNotesDownloader.downloadUpdate(url, QString());
+}
+
 void QGlitterUpdateAlert::setAppcastItem(const QGlitterAppcastItem &appcastItem)
 {
 	m_appcastItem = appcastItem;
@@ -86,7 +93,7 @@ void QGlitterUpdateAlert::setAppcastItem(const QGlitterAppcastItem &appcastItem)
 	if (descriptions.find(m_defaultLanguage) != descriptions.end()) {
 		m_ui->releaseNotes->setHtml(descriptions[m_defaultLanguage]);
 	} else if (releaseNotesUrls.find(m_defaultLanguage) != releaseNotesUrls.end()) {
-		m_ui->releaseNotes->setUrl(releaseNotesUrls[m_defaultLanguage]);
+		downloadReleaseNotes(releaseNotesUrls[m_defaultLanguage]);
 	} else if (descriptions.size() > 0) {
 		QMapIterator<QString, QString> i(descriptions);
 		if (i.hasNext()) {
@@ -95,7 +102,7 @@ void QGlitterUpdateAlert::setAppcastItem(const QGlitterAppcastItem &appcastItem)
 	} else {
 		QMapIterator<QString, QString> i(releaseNotesUrls);
 		if (i.hasNext()) {
-			m_ui->releaseNotes->setUrl(i.next().value());
+			downloadReleaseNotes(i.next().value());
 		}
 	}
 }
@@ -137,4 +144,15 @@ void QGlitterUpdateAlert::toggleSkipVersion()
 void QGlitterUpdateAlert::toggleAutomaticDownloads()
 {
 	m_automaticDownloads = !m_automaticDownloads;
+}
+
+void QGlitterUpdateAlert::downloadFinished(int errorCode, QString pathToFile)
+{
+    if (errorCode == QGlitterDownloader::NoError) {
+        QFile file(pathToFile);
+        if (file.open(QFile::ReadOnly)) {
+            m_ui->releaseNotes->setHtml(QString(file.readAll()));
+        }
+    }
+    disconnect(&m_releaseNotesDownloader, SIGNAL(downloadFinished(int, QString)), this, SLOT(downloadFinished(int,QString)));
 }

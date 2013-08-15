@@ -20,12 +20,14 @@
 
 #pragma once
 
-#ifdef WIN32
-#	ifdef QGLITTER_EXPORT_SYMBOLS
-#		define QGLITTER_EXPORTED __declspec(dllexport)
+#ifndef QGLITTER_EXPORTED
+#	ifdef WIN32
+#		ifdef QGLITTER_EXPORT_SYMBOLS
+#			define QGLITTER_EXPORTED __declspec(dllexport)
+#		else
+#			define QGLITTER_EXPORTED __declspec(dllimport)
+#		endif
 #	else
-#		define QGLITTER_EXPORTED __declspec(dllimport)
+#		define QGLITTER_EXPORTED __attribute__ ((visibility ("default")))
 #	endif
-#else
-#	define QGLITTER_EXPORTED __attribute__ ((visibility ("default")))
 #endif

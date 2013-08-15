@@ -100,6 +100,20 @@ void QGlitterUpdateStatus::downloadFinished(int errorCode, QString)
 	}
 }
 
+static QString humanReadableSize(qint64 size)
+{
+    double num = size;
+    QStringList list;
+    list << "KB" << "MB" << "GB" << "TB";
+    QStringListIterator i(list);
+    QString unit("bytes");
+    while (num >= 1024.0 && i.hasNext()) {
+        unit = i.next();
+        num /= 1024.0;
+    }
+    return QString("%1 %2").arg(num, 0, 'f', 1).arg(unit);
+}
+
 void QGlitterUpdateStatus::downloadProgress(qint64 bytesReceived, qint64 bytesTotal)
 {
 	if (!m_ui) {
@@ -108,10 +122,7 @@ void QGlitterUpdateStatus::downloadProgress(qint64 bytesReceived, qint64 bytesTo
 
 	m_ui->progressBar->setMaximum(bytesTotal);
 	m_ui->progressBar->setValue(bytesReceived);
-
-	float downloadedMB = bytesReceived / (1024 * 1024);
-	float totalMB = bytesTotal / (1024 * 1024);
-	m_ui->progressText->setText(QObject::tr("Downloaded %1 MB of %2 MB").arg(downloadedMB).arg(totalMB));
+	m_ui->progressText->setText(QObject::tr("Downloaded %1 of %2").arg(humanReadableSize(bytesReceived)).arg(humanReadableSize(bytesTotal)));
 }
 
 void QGlitterUpdateStatus::buttonPressed()

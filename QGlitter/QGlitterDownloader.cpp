@@ -75,6 +75,7 @@ void QGlitterDownloader::downloadUpdate(QString url, QString signature)
 	connect(m_currentDownload, SIGNAL(readyRead()), this, SLOT(readyRead()));
 	connect(m_currentDownload, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(error(QNetworkReply::NetworkError)));
 	connect(m_currentDownload, SIGNAL(finished()), this, SLOT(finished()));
+	connect(m_currentDownload, SIGNAL(downloadProgress(qint64,qint64)), this, SLOT(progress(qint64,qint64)));
 }
 
 void QGlitterDownloader::cancelDownload()

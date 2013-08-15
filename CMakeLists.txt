@@ -9,7 +9,7 @@ if(APPLE)
 	set(CMAKE_OSX_DEPLOYMENT_TARGET 10.7)
 
 	if(CMAKE_OSX_SYSROOT STREQUAL "")
-        execute_process(COMMAND xcodebuild -version -sdk macosx Path OUTPUT_VARIABLE CMAKE_OSX_SYSROOT OUTPUT_STRIP_TRAILING_WHITESPACE)
+		execute_process(COMMAND xcodebuild -version -sdk macosx Path OUTPUT_VARIABLE CMAKE_OSX_SYSROOT OUTPUT_STRIP_TRAILING_WHITESPACE)
 	endif()
 endif()
 

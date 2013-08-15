@@ -438,8 +438,7 @@ void QGlitterUpdater::updateCheck()
 
 void QGlitterUpdater::backgroundUpdateCheck()
 {
-	QGLITTER_D(QGlitterUpdater);
-	d->timer->singleShot(0, this, SLOT(updateTimeout()));
+	QTimer::singleShot(0, this, SLOT(updateTimeout()));
 }
 
 void QGlitterUpdater::appcastDownloaded(QNetworkReply *reply)

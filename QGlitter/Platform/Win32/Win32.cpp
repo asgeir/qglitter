@@ -27,10 +27,10 @@
 
 bool QGlitter::installUpdate(const QString &installerPath)
 {
-	MoveFileExA(installerPath.toAscii().data(), NULL, MOVEFILE_DELAY_UNTIL_REBOOT);
+	MoveFileExA(installerPath.toLatin1().data(), NULL, MOVEFILE_DELAY_UNTIL_REBOOT);
 
 	QString command = QString("start %1").arg(installerPath);
-	return system(command.toAscii().data()) == 0;
+	return system(command.toLatin1().data()) == 0;
 }
 
 bool QGlitter::osVersionLessThan(QString other)

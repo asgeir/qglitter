@@ -79,9 +79,9 @@ set(PUBLIC_HEADERS
 	QGlitterUpdater.h)
 
 set(UI_FILES
-	Designer/QGlitterAutomaticUpdateAlert.ui
-	Designer/QGlitterUpdateAlert.ui
-	Designer/QGlitterUpdateStatus.ui)
+	QGlitterAutomaticUpdateAlert.ui
+	QGlitterUpdateAlert.ui
+	QGlitterUpdateStatus.ui)
 
 QT4_WRAP_CPP(MOC_SOURCES ${HEADERS})
 QT4_WRAP_UI(UI_SOURCES ${UI_FILES})

@@ -132,7 +132,7 @@ void QGlitterDownloader::finished()
 
 	QFile fileToVerify(m_downloadedFileName);
 	if (fileToVerify.open(QIODevice::ReadOnly)) {
-		if ((m_signature.size() == 0 && m_publicKey.size() == 0) || QGlitter::dsaVerify(fileToVerify, QByteArray::fromBase64(m_signature.toAscii()), m_publicKey)) {
+		if ((m_signature.size() == 0 && m_publicKey.size() == 0) || QGlitter::dsaVerify(fileToVerify, QByteArray::fromBase64(m_signature.toLatin1()), m_publicKey)) {
 			m_errorCode = QGlitterDownloader::NoError;
 
 			emit downloadFinished(QGlitterDownloader::NoError, m_downloadedFileName);

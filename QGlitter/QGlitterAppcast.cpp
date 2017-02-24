@@ -44,7 +44,7 @@ bool QGlitterAppcast::read(QIODevice *data)
 		if (d->xmlReader.name() == "rss" && d->xmlReader.attributes().value("version") == "2.0") {
 			readAppcast();
 		} else {
-			d->xmlReader.raiseError(QObject::tr("The file is not an RSS version 2.0 file."));
+			d->xmlReader.raiseError(tr("The file is not an RSS version 2.0 file."));
 		}
 	}
 
@@ -61,7 +61,7 @@ void QGlitterAppcast::readAppcast()
 			readChannel();
 			foundChannel = true;
 		} else {
-			d->xmlReader.raiseError(QObject::tr("Unrecognized RSS tag or multiple channels"));
+			d->xmlReader.raiseError(tr("Unrecognized RSS tag or multiple channels"));
 			return;
 		}
 	}
@@ -83,7 +83,7 @@ void QGlitterAppcast::readChannel()
 		} else if (d->xmlReader.name() == "item") {
 			readItem();
 		} else {
-			d->xmlReader.raiseError(QObject::tr("Unrecognized RSS channel tag"));
+			d->xmlReader.raiseError(tr("Unrecognized RSS channel tag"));
 			return;
 		}
 	}
@@ -140,11 +140,11 @@ void QGlitterAppcast::readItem()
 				currentItem.setSignature(attributes.value(kSparkleNamespace, "dsaSignature").toString());
 				currentItem.setVersion(attributes.value(kSparkleNamespace, "version").toString());
 			} else {
-				d->xmlReader.raiseError(QObject::tr("Invalid RSS enclosure"));
+				d->xmlReader.raiseError(tr("Invalid RSS enclosure"));
 				return;
 			}
 		} else {
-			d->xmlReader.raiseError(QObject::tr("Unrecognized RSS item tag"));
+			d->xmlReader.raiseError(tr("Unrecognized RSS item tag"));
 			return;
 		}
 	}

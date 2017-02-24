@@ -35,8 +35,8 @@ QGlitterUpdateCheckStatus::QGlitterUpdateCheckStatus(QWidget *parent, Qt::Window
 
 	m_ui->setupUi(this);
 
-	m_ui->statusText->setText(QString(kQGlitterBoldText).arg(QObject::tr("Checking for Updates")));
-	m_ui->pushButton->setText(QObject::tr("Cancel"));
+	m_ui->statusText->setText(QString(kQGlitterBoldText).arg(tr("Checking for Updates")));
+	m_ui->pushButton->setText(tr("Cancel"));
 
 	connect(m_ui->pushButton, SIGNAL(clicked(bool)), this, SLOT(reject()));
 
@@ -89,8 +89,8 @@ void QGlitterUpdateCheckStatus::noUpdatesAvailable()
 		return;
 	}
 
-	m_ui->statusText->setText(QString(kQGlitterBoldText).arg(QObject::tr("No Updates Found")));
-	m_ui->pushButton->setText(QObject::tr("OK"));
+	m_ui->statusText->setText(QString(kQGlitterBoldText).arg(tr("No Updates Found")));
+	m_ui->pushButton->setText(tr("OK"));
 
 	m_ui->progressBar->setMinimum(0);
 	m_ui->progressBar->setMaximum(1);

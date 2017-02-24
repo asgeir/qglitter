@@ -43,7 +43,7 @@ QGlitterUpdateAlert::QGlitterUpdateAlert(QWidget *parent, Qt::WindowFlags f)
 	connect(m_ui->remindMeLaterButton, SIGNAL(clicked(bool)), this, SLOT(reject()));
 	connect(m_ui->skipVersionButton, SIGNAL(clicked(bool)), this, SLOT(toggleSkipVersion()));
 
-	m_ui->headerLabel->setText(QString(kQGlitterBoldText).arg(QObject::tr("A new version of %1 is available!").arg(qApp->applicationName())));
+	m_ui->headerLabel->setText(QString(kQGlitterBoldText).arg(tr("A new version of %1 is available!").arg(qApp->applicationName())));
 }
 
 QGlitterUpdateAlert::~QGlitterUpdateAlert()
@@ -81,7 +81,7 @@ void QGlitterUpdateAlert::setAppcastItem(const QGlitterAppcastItem &appcastItem)
 		return;
 	}
 
-	QString message = QObject::tr("%1 %2 is now available &mdash; you have %3. Would you like to download it now?");
+	QString message = tr("%1 %2 is now available &mdash; you have %3. Would you like to download it now?");
 	message = message.arg(qApp->applicationName());
 	message = message.arg(appcastItem.shortVersionString());
 	message = message.arg(qApp->applicationVersion());

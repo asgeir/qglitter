@@ -454,6 +454,9 @@ void QGlitterUpdater::appcastDownloaded(QNetworkReply *reply)
 		} else {
 			emit errorLoadingAppcast();
 		}
+	} else {
+        qDebug() << "Network error:" << reply->errorString();
+		emit errorLoadingAppcast();
 	}
 
 	d->isCheckingForUpdates = false;

@@ -455,7 +455,7 @@ void QGlitterUpdater::appcastDownloaded(QNetworkReply *reply)
 			emit errorLoadingAppcast();
 		}
 	} else {
-        qDebug() << "Network error:" << reply->errorString();
+		qDebug() << "Network error:" << reply->errorString();
 		emit errorLoadingAppcast();
 	}
 
